@@ -128,3 +128,49 @@
     @apply font-sans;
   }
 }
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .qr-screen-only {
+    display: none;
+  }
+
+  .qr-page {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .qr-print-sheet {
+    gap: 4mm;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    break-inside: avoid;
+  }
+
+  .qr-print-sheet h2 {
+    font-size: 24pt;
+  }
+
+  .qr-code {
+    padding: 0;
+  }
+
+  .qr-code svg {
+    width: 72mm;
+    height: 72mm;
+  }
+}
