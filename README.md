@@ -13,7 +13,21 @@
 
 ```sh
 git clone git@github.com:Hashimoto-Teppei/techguild-shibukawa-2026-team-c.git
+cd techguild-shibukawa-2026-team-c
+mise install        # Node 24 と pnpm 12 が入る（mise がなければ https://mise.jdx.dev から入れる）
+pnpm install
 ```
+
+`.dev.vars.example` を `.dev.vars` に、`.env.example` を `.env` にコピーします（エクスプローラーや Finder でコピーしてもよい）。Google Maps の API キーは橋本から受け取って `.env` に書きます。
+
+```sh
+pnpm db:reset       # ローカル DB を作ってデモデータを入れる
+pnpm dev            # http://localhost:5173 を開く
+```
+
+管理画面は http://localhost:5173/admin/login です。デモ用アカウントは `kanko@example.com` / `demo-pass-1234` です。
+
+PR を出す前に `pnpm lint` と `pnpm test` を通してください。ほかのコマンドは [AGENTS.md](AGENTS.md) にあります。
 
 ### Windows の場合
 
