@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api";
 import { imageUrl } from "@/lib/urls";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/_authed/maps/$mapId/")({ component: MapEditPage });
 
@@ -91,7 +92,7 @@ function MapEditPage() {
   };
 
   return (
-    <main className="mx-auto max-w-2xl space-y-6 p-4">
+    <main className="mx-auto max-w-2xl space-y-6 p-4 lg:max-w-5xl">
       <Link to="/admin" className="text-sm underline">
         ← 自分のマップ
       </Link>
@@ -101,9 +102,11 @@ function MapEditPage() {
           <Badge variant={data.published ? "default" : "secondary"}>
             {data.published ? "公開中" : "非公開"}
           </Badge>
+          {/* 非公開のうちは「公開する」が次にやること。主ボタン（ブイ色）で目立たせる */}
           <Button
             size="sm"
-            variant="outline"
+            variant={data.published ? "outline" : "default"}
+            className={cn(!data.published && "bg-buoy font-bold text-ink hover:bg-buoy/80")}
             onClick={() => save(mapApi.$patch({ param, json: { published: !data.published } }))}
           >
             {data.published ? "非公開にする" : "公開する"}
@@ -125,143 +128,146 @@ function MapEditPage() {
         </p>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">マップページの見た目</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <form
-            className="space-y-3"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const form = new FormData(e.currentTarget);
-              save(
-                mapApi.$patch({
-                  param,
-                  json: {
-                    title: String(form.get("title")),
-                    description: String(form.get("description")),
-                  },
-                }),
-              );
-            }}
-          >
-            <div className="space-y-2">
-              <Label htmlFor="map-title">タイトル</Label>
-              <Input id="map-title" name="title" defaultValue={data.title} required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="map-description">説明文</Label>
-              <Textarea
-                id="map-description"
-                name="description"
-                defaultValue={data.description}
-                rows={4}
-              />
-            </div>
-            <Button type="submit">タイトルと説明文を保存</Button>
-          </form>
-          {data.headerImageKey && (
-            <img
-              src={imageUrl(data.headerImageKey)}
-              alt=""
-              className="h-32 w-full rounded-md object-cover"
-            />
-          )}
-          <div className="space-y-2">
-            <Label htmlFor="header-image">ヘッダー画像（JPEG・PNG・WebP、10MB まで）</Label>
-            <Input
-              id="header-image"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              // 回線が遅いと反応がなく見えて二重に送りがちなので、終わるまで選べなくする
-              disabled={uploading}
-              onChange={async (e) => {
-                const input = e.currentTarget;
-                const image = input.files?.[0];
-                if (!image) return;
-                if (image.size > 10 * 1024 * 1024) {
-                  setError("画像が大きすぎるけぇ、10MB以下にしてぇ");
-                  input.value = "";
-                  return;
-                }
-                setUploading(true);
-                await save(mapApi["header-image"].$put({ param, form: { image } }));
-                setUploading(false);
-                input.value = "";
+      {/* PC では見た目とレイヤーを横に並べ、スポットのフォームに幅を回す */}
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">マップページの見た目</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <form
+              className="space-y-3"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = new FormData(e.currentTarget);
+                save(
+                  mapApi.$patch({
+                    param,
+                    json: {
+                      title: String(form.get("title")),
+                      description: String(form.get("description")),
+                    },
+                  }),
+                );
               }}
-            />
-            {uploading && <p className="text-sm text-muted-foreground">アップロード中…</p>}
-          </div>
-        </CardContent>
-      </Card>
+            >
+              <div className="space-y-2">
+                <Label htmlFor="map-title">タイトル</Label>
+                <Input id="map-title" name="title" defaultValue={data.title} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="map-description">説明文</Label>
+                <Textarea
+                  id="map-description"
+                  name="description"
+                  defaultValue={data.description}
+                  rows={4}
+                />
+              </div>
+              <Button type="submit">タイトルと説明文を保存</Button>
+            </form>
+            {data.headerImageKey && (
+              <img
+                src={imageUrl(data.headerImageKey)}
+                alt=""
+                className="h-32 w-full rounded-md object-cover"
+              />
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="header-image">ヘッダー画像（JPEG・PNG・WebP、10MB まで）</Label>
+              <Input
+                id="header-image"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                // 回線が遅いと反応がなく見えて二重に送りがちなので、終わるまで選べなくする
+                disabled={uploading}
+                onChange={async (e) => {
+                  const input = e.currentTarget;
+                  const image = input.files?.[0];
+                  if (!image) return;
+                  if (image.size > 10 * 1024 * 1024) {
+                    setError("画像が大きすぎるけぇ、10MB以下にしてぇ");
+                    input.value = "";
+                    return;
+                  }
+                  setUploading(true);
+                  await save(mapApi["header-image"].$put({ param, form: { image } }));
+                  setUploading(false);
+                  input.value = "";
+                }}
+              />
+              {uploading && <p className="text-sm text-muted-foreground">アップロード中…</p>}
+            </div>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">レイヤー</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <ul className="space-y-2">
-            {data.layers.map((l) => (
-              <li key={l.id} className="space-y-2">
-                <form
-                  className="flex gap-2"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const name = String(new FormData(e.currentTarget).get("name"));
-                    save(
-                      mapApi.layers[":layerId"].$patch({
-                        param: { ...param, layerId: l.id },
-                        json: { name },
-                      }),
-                    );
-                  }}
-                >
-                  <Input name="name" defaultValue={l.name} required aria-label="レイヤーの名前" />
-                  <Button type="submit" variant="outline">
-                    名前を保存
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => {
-                      if (
-                        !confirm(
-                          `レイヤー「${l.name}」を削除しますか？（スポットは残りますが、このレイヤーの項目と入力済みの値は消えます）`,
-                        )
-                      )
-                        return;
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">レイヤー</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <ul className="space-y-2">
+              {data.layers.map((l) => (
+                <li key={l.id} className="space-y-2">
+                  <form
+                    className="flex gap-2"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const name = String(new FormData(e.currentTarget).get("name"));
                       save(
-                        mapApi.layers[":layerId"].$delete({ param: { ...param, layerId: l.id } }),
+                        mapApi.layers[":layerId"].$patch({
+                          param: { ...param, layerId: l.id },
+                          json: { name },
+                        }),
                       );
                     }}
                   >
-                    削除
-                  </Button>
-                </form>
-                <FieldList layer={l} mapId={mapId} save={save} />
-              </li>
-            ))}
-          </ul>
-          <form
-            className="flex gap-2"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              const form = e.currentTarget;
-              const name = String(new FormData(form).get("name"));
-              if (await save(mapApi.layers.$post({ param, json: { name } }))) form.reset();
-            }}
-          >
-            <Input
-              name="name"
-              placeholder="例: 家族向け"
-              required
-              aria-label="新しいレイヤーの名前"
-            />
-            <Button type="submit">レイヤーを追加</Button>
-          </form>
-        </CardContent>
-      </Card>
+                    <Input name="name" defaultValue={l.name} required aria-label="レイヤーの名前" />
+                    <Button type="submit" variant="outline">
+                      名前を保存
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={() => {
+                        if (
+                          !confirm(
+                            `レイヤー「${l.name}」を削除しますか？（スポットは残りますが、このレイヤーの項目と入力済みの値は消えます）`,
+                          )
+                        )
+                          return;
+                        save(
+                          mapApi.layers[":layerId"].$delete({ param: { ...param, layerId: l.id } }),
+                        );
+                      }}
+                    >
+                      削除
+                    </Button>
+                  </form>
+                  <FieldList layer={l} mapId={mapId} save={save} />
+                </li>
+              ))}
+            </ul>
+            <form
+              className="flex gap-2"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const form = e.currentTarget;
+                const name = String(new FormData(form).get("name"));
+                if (await save(mapApi.layers.$post({ param, json: { name } }))) form.reset();
+              }}
+            >
+              <Input
+                name="name"
+                placeholder="例: 家族向け"
+                required
+                aria-label="新しいレイヤーの名前"
+              />
+              <Button type="submit">レイヤーを追加</Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
 
       <Card>
         <CardHeader>
@@ -445,114 +451,124 @@ function SpotForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border bg-muted/40 p-4">
-      <h3 className="font-bold">{spot ? "スポットを編集" : "スポットを追加"}</h3>
-      <div className="space-y-2">
-        <Label htmlFor="spot-name">名前</Label>
-        <Input id="spot-name" name="name" defaultValue={spot?.name} required />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="spot-description">説明</Label>
-        <Textarea
-          id="spot-description"
-          name="description"
-          defaultValue={spot?.description}
-          rows={3}
-        />
-      </div>
-      {layers.length > 0 && (
-        <fieldset className="flex flex-wrap gap-x-4 gap-y-2">
-          <legend className="mb-2 text-sm font-medium">表示するレイヤー</legend>
-          {layers.map((l) => (
-            <label key={l.id} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                className="size-4 accent-primary"
-                name="layerIds"
-                value={l.id}
-                checked={layerIds.includes(l.id)}
-                onChange={(e) =>
-                  setLayerIds((ids) =>
-                    e.target.checked ? [...ids, l.id] : ids.filter((id) => id !== l.id),
-                  )
-                }
-              />
-              {l.name}
-            </label>
-          ))}
-        </fieldset>
-      )}
-      {/* 同じ名前の項目が別のレイヤーにもありうるので、レイヤー名でまとめる。
-          チェックを外しても消さずに隠すだけにして、付け直したときに入力途中の値を残す */}
-      {layers
-        .filter((l) => l.fields.length > 0)
-        .map((l) => (
-          <fieldset key={l.id} className="space-y-2" hidden={!layerIds.includes(l.id)}>
-            <legend className="mb-2 text-sm font-medium">{l.name}の項目</legend>
-            {l.fields.map((f) => (
-              <div key={f.id} className="space-y-1">
-                <Label htmlFor={`field-${f.id}`}>{f.name}</Label>
-                <Input
-                  id={`field-${f.id}`}
-                  name={`field:${f.id}`}
-                  defaultValue={spot?.values[f.id] ?? ""}
-                />
-              </div>
-            ))}
-          </fieldset>
-        ))}
-      <fieldset className="space-y-2">
-        <legend className="mb-2 text-sm font-medium">
-          掲載期間（イベントなど期間限定のときだけ。空なら常に表示）
-        </legend>
-        <div className="flex flex-wrap items-center gap-2">
-          <Input
-            type="date"
-            name="startDate"
-            defaultValue={spot?.startDate ?? ""}
-            aria-label="掲載開始日"
-            className="w-auto"
-          />
-          〜
-          <Input
-            type="date"
-            name="endDate"
-            defaultValue={spot?.endDate ?? ""}
-            aria-label="掲載終了日"
-            className="w-auto"
+    // PC では左に入力欄、右に場所を決める地図を並べる
+    <form
+      onSubmit={handleSubmit}
+      className="grid gap-4 rounded-lg border bg-muted/40 p-4 lg:grid-cols-2 lg:gap-6"
+    >
+      <div className="space-y-4">
+        <h3 className="font-bold">{spot ? "スポットを編集" : "スポットを追加"}</h3>
+        <div className="space-y-2">
+          <Label htmlFor="spot-name">名前</Label>
+          <Input id="spot-name" name="name" defaultValue={spot?.name} required />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="spot-description">説明</Label>
+          <Textarea
+            id="spot-description"
+            name="description"
+            defaultValue={spot?.description}
+            rows={3}
           />
         </div>
-      </fieldset>
-      <p className="text-sm font-medium">
-        地図をクリックして場所を決め、ピンをドラッグして調整します
-      </p>
-      <div className="h-72 overflow-hidden rounded-md">
-        <MapView
-          spots={pos ? [{ id: "editing", name: "", ...pos }] : []}
-          onMapClick={setPos}
-          onSpotDrag={(_, p) => setPos(p)}
-        />
-      </div>
-      {saveSuccess && (
-        <p className="text-sm text-emerald-700" role="status" aria-live="polite">
-          {saveSuccess}
-        </p>
-      )}
-      {(error || saveError) && (
-        <p className="text-sm text-destructive" role="alert">
-          {error || saveError}
-        </p>
-      )}
-      <div className="flex gap-2">
-        <Button type="submit">保存</Button>
-        <Button type="button" variant="outline" onClick={onCancel}>
-          やめる
-        </Button>
-        {onDelete && (
-          <Button type="button" variant="destructive" className="ml-auto" onClick={onDelete}>
-            削除
-          </Button>
+        {layers.length > 0 && (
+          <fieldset className="flex flex-wrap gap-x-4 gap-y-2">
+            <legend className="mb-2 text-sm font-medium">表示するレイヤー</legend>
+            {layers.map((l) => (
+              <label key={l.id} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="size-4 accent-primary"
+                  name="layerIds"
+                  value={l.id}
+                  checked={layerIds.includes(l.id)}
+                  onChange={(e) =>
+                    setLayerIds((ids) =>
+                      e.target.checked ? [...ids, l.id] : ids.filter((id) => id !== l.id),
+                    )
+                  }
+                />
+                {l.name}
+              </label>
+            ))}
+          </fieldset>
         )}
+        {/* 同じ名前の項目が別のレイヤーにもありうるので、レイヤー名でまとめる。
+          チェックを外しても消さずに隠すだけにして、付け直したときに入力途中の値を残す */}
+        {layers
+          .filter((l) => l.fields.length > 0)
+          .map((l) => (
+            <fieldset key={l.id} className="space-y-2" hidden={!layerIds.includes(l.id)}>
+              <legend className="mb-2 text-sm font-medium">{l.name}の項目</legend>
+              {l.fields.map((f) => (
+                <div key={f.id} className="space-y-1">
+                  <Label htmlFor={`field-${f.id}`}>{f.name}</Label>
+                  <Input
+                    id={`field-${f.id}`}
+                    name={`field:${f.id}`}
+                    defaultValue={spot?.values[f.id] ?? ""}
+                  />
+                </div>
+              ))}
+            </fieldset>
+          ))}
+        <fieldset className="space-y-2">
+          <legend className="mb-2 text-sm font-medium">
+            掲載期間（イベントなど期間限定のときだけ。空なら常に表示）
+          </legend>
+          <div className="flex flex-wrap items-center gap-2">
+            <Input
+              type="date"
+              name="startDate"
+              defaultValue={spot?.startDate ?? ""}
+              aria-label="掲載開始日"
+              className="w-auto"
+            />
+            〜
+            <Input
+              type="date"
+              name="endDate"
+              defaultValue={spot?.endDate ?? ""}
+              aria-label="掲載終了日"
+              className="w-auto"
+            />
+          </div>
+        </fieldset>
+      </div>
+      <div className="flex flex-col gap-2 lg:row-span-2">
+        <p className="text-sm font-medium">
+          地図をクリックして場所を決め、ピンをドラッグして調整します
+        </p>
+        <div className="h-72 overflow-hidden rounded-md lg:h-auto lg:min-h-96 lg:flex-1">
+          <MapView
+            spots={pos ? [{ id: "editing", name: "", ...pos }] : []}
+            onMapClick={setPos}
+            onSpotDrag={(_, p) => setPos(p)}
+          />
+        </div>
+      </div>
+      <div className="space-y-4">
+        {saveSuccess && (
+          <p className="text-sm text-emerald-700" role="status" aria-live="polite">
+            {saveSuccess}
+          </p>
+        )}
+        {(error || saveError) && (
+          <p className="text-sm text-destructive" role="alert">
+            {error || saveError}
+          </p>
+        )}
+        <div className="flex gap-2">
+          <Button type="submit">保存</Button>
+          <Button type="button" variant="outline" onClick={onCancel}>
+            やめる
+          </Button>
+          {onDelete && (
+            <Button type="button" variant="destructive" className="ml-auto" onClick={onDelete}>
+              削除
+            </Button>
+          )}
+        </div>
       </div>
     </form>
   );

@@ -60,23 +60,30 @@ function AdminMapListPage() {
           うまいこと読めんかったけぇ、時間おいて開き直してぇ
         </p>
       )}
-      <ul className="divide-y rounded-xl border">
-        {data?.map((m) => (
-          <li key={m.id}>
-            <Link
-              to="/admin/maps/$mapId"
-              params={{ mapId: m.id }}
-              className="flex items-center gap-2 p-4 hover:bg-muted"
-            >
-              <span className="flex-1 font-medium">{m.title}</span>
-              <Badge variant={m.published ? "default" : "secondary"}>
-                {m.published ? "公開中" : "非公開"}
-              </Badge>
-              <ChevronRight className="size-4 text-muted-foreground" />
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {data?.length === 0 && (
+        <p className="rounded-xl border border-dashed p-4 text-muted-foreground">
+          まだマップがないけぇ、下で作ってみて
+        </p>
+      )}
+      {!!data?.length && (
+        <ul className="divide-y rounded-xl border">
+          {data.map((m) => (
+            <li key={m.id}>
+              <Link
+                to="/admin/maps/$mapId"
+                params={{ mapId: m.id }}
+                className="flex items-center gap-2 p-4 hover:bg-muted"
+              >
+                <span className="flex-1 font-medium">{m.title}</span>
+                <Badge variant={m.published ? "default" : "secondary"}>
+                  {m.published ? "公開中" : "非公開"}
+                </Badge>
+                <ChevronRight className="size-4 text-muted-foreground" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
       <form onSubmit={onCreate} className="flex gap-2">
         <Input
           name="title"
