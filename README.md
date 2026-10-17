@@ -25,6 +25,8 @@ pnpm db:reset       # ローカル DB を作ってデモデータを入れる
 pnpm dev            # http://localhost:5173 を開く
 ```
 
+`no such table` のエラーが出たら、もう一度 `pnpm db:reset` を実行してください（DB の設定が変わるとローカル DB が作り直しになります）。
+
 管理画面は http://localhost:5173/admin/login です。デモ用アカウントは `kanko@example.com` / `demo-pass-1234` です。
 
 PR を出す前に `pnpm lint` と `pnpm test` を通してください。ほかのコマンドは [AGENTS.md](AGENTS.md) にあります。

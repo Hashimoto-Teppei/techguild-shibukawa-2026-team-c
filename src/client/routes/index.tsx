@@ -8,7 +8,11 @@ export const Route = createFileRoute("/")({ component: MapListPage });
 function MapListPage() {
   const { data } = useQuery({
     queryKey: ["maps"],
-    queryFn: async () => (await api.maps.$get()).json(),
+    queryFn: async () => {
+      const res = await api.maps.$get();
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    },
   });
   return (
     <main className="mx-auto max-w-2xl p-4">
