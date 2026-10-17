@@ -21,7 +21,7 @@ Googleマイマップのような観光マップWebサービスを作る。**ハ
 
 ## 未決事項
 
-技術構成は `docs/tech-stack.md`、公開 URL は `docs/public-url.md`、デモシナリオは `docs/demo-scenario.md` で決定済み。画面と機能の範囲・担当分けは #4 で決める。雛形を作ったら、このファイルにコマンド（dev / build / test）とアーキテクチャを追記すること。
+技術構成は `docs/tech-stack.md`、公開 URL は `docs/public-url.md`、デモシナリオは `docs/demo-scenario.md`、画面・機能の範囲と担当分けは `docs/team-plan.md` で決定済み。雛形を作ったら、このファイルにコマンド（dev / build / test）とアーキテクチャを追記すること。
 
 ## 開発方針
 
