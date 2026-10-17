@@ -29,3 +29,15 @@ INSERT INTO spot_layers (spot_id, layer_id) VALUES
   ('spot-beach', 'date'),
   ('spot-ojigatake', 'date'),
   ('spot-event', 'family');
+
+-- id は作成順の並びを決めるので、出したい順に辞書順で並ぶ名前にする
+INSERT INTO layer_fields (id, layer_id, name) VALUES
+  ('family-1', 'family', '授乳室'),
+  ('family-2', 'family', '駐車場'),
+  ('family-3', 'family', 'ベビーカー');
+
+INSERT INTO spot_field_values (spot_id, field_id, value) VALUES
+  ('spot-beach', 'family-1', 'あり（海の家の2階）'),
+  ('spot-beach', 'family-2', '無料 約100台'),
+  ('spot-beach', 'family-3', '砂浜は押しにくいので抱っこひもがおすすめ'),
+  ('spot-event', 'family-2', '臨時駐車場あり');

@@ -22,7 +22,7 @@ Googleマイマップのような観光マップWebサービスを作る。**ユ
 
 ## 決定済みの仕様
 
-技術構成は `docs/tech-stack.md`、公開 URL は `docs/public-url.md`、デモシナリオは `docs/demo-scenario.md`、画面・機能の範囲と担当分けは `docs/team-plan.md`。
+技術構成は `docs/tech-stack.md`、公開 URL は `docs/public-url.md`、デモシナリオは `docs/demo-scenario.md`、画面・機能の範囲と担当分けは `docs/team-plan.md`、レイヤーの項目は `docs/layer-fields.md`。用語は `GLOSSARY.md` に合わせる。
 
 ## コマンド
 
@@ -102,6 +102,8 @@ drizzle/               マイグレーション（自動生成）
 ## ドキュメント構成
 
 - 検討の結論は `docs/` 直下に1テーマ1ファイルで置く（例: `docs/personas.md`）。サブフォルダで細かく分類しない
+- 機能を足すときは、`docs/team-plan.md` には画面・データの範囲を1行で足し、細かい仕様は `docs/<機能名>.md` に分ける（例: `docs/layer-fields.md`）。追加したファイルは「決定済みの仕様」に載せる
+- 用語は `GLOSSARY.md`（定義だけ。仕様は書かない）
 - `docs/agents/` はエージェントスキルの設定
 - 画像は `docs/images/` に置く
 

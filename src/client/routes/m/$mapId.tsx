@@ -2,7 +2,7 @@ import { filterByLayer } from "@shared/layer-filter";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin, Navigation } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { MapView } from "@/components/map-view";
 import { Button } from "@/components/ui/button";
@@ -88,6 +88,18 @@ function MapPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="whitespace-pre-wrap">{selected.description}</p>
+              {selected.fields.length > 0 && (
+                <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                  {selected.fields.map((f, i) => (
+                    // 同じ名前の項目がありうるので index を key にする
+                    // biome-ignore lint/suspicious/noArrayIndexKey: 並びはサーバーが決めていて変わらない
+                    <Fragment key={i}>
+                      <dt className="text-muted-foreground">{f.name}</dt>
+                      <dd className="whitespace-pre-wrap">{f.value}</dd>
+                    </Fragment>
+                  ))}
+                </dl>
+              )}
               <Button asChild size="lg" className="w-full">
                 <a href={directionsUrl(selected)} target="_blank" rel="noreferrer">
                   <Navigation />
