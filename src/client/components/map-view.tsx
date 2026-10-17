@@ -7,19 +7,23 @@ import {
 } from "@vis.gl/react-google-maps";
 import { useEffect } from "react";
 
-type MapSpot = { id: string; name: string; lat: number; lng: number };
+type LatLng = { lat: number; lng: number };
+type MapSpot = LatLng & { id: string; name: string };
 
 type Props = {
   spots: MapSpot[];
   selectedId?: string;
-  onSelect: (id: string) => void;
+  onSelect?: (id: string) => void;
+  // 管理画面用: 地図クリックでピンを置き、ドラッグで動かす
+  onMapClick?: (pos: LatLng) => void;
+  onSpotDrag?: (id: string, pos: LatLng) => void;
 };
 
 // スポットがないときの中心（仮の値。#32 のデータに合わせて直す）
 const SHIBUKAWA = { lat: 34.5689, lng: 133.8895 };
 
 // Google マップにスポットのピンを表示する。公開ページと管理画面で共用する
-export function MapView({ spots, selectedId, onSelect }: Props) {
+export function MapView({ spots, selectedId, onSelect, onMapClick, onSpotDrag }: Props) {
   return (
     <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} language="ja" region="JP">
       <GoogleMap
@@ -30,6 +34,9 @@ export function MapView({ spots, selectedId, onSelect }: Props) {
         gestureHandling="greedy"
         disableDefaultUI
         className="h-full w-full"
+        // ピンを置くときは、お店などのアイコンを押しても情報ウィンドウを開かない
+        clickableIcons={!onMapClick}
+        onClick={(e) => e.detail.latLng && onMapClick?.(e.detail.latLng)}
       >
         <FitToSpots spots={spots} />
         {spots.map((s) => (
@@ -37,7 +44,9 @@ export function MapView({ spots, selectedId, onSelect }: Props) {
             key={s.id}
             position={s}
             title={s.name}
-            onClick={() => onSelect(s.id)}
+            onClick={() => onSelect?.(s.id)}
+            draggable={!!onSpotDrag}
+            onDragEnd={(e) => e.latLng && onSpotDrag?.(s.id, e.latLng.toJSON())}
             zIndex={s.id === selectedId ? 1 : 0}
           >
             <Pin
