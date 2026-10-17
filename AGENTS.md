@@ -6,7 +6,7 @@
 
 ハッカソン「techguild 渋川 2026」（テーマ: ITの力を使って渋川を盛り上げる）のチーム「カメに懸賞金」(team-c) のリポジトリ。
 
-Googleマイマップのような観光マップWebサービスを作る。**ユーザーがマップを作って公開し、別のユーザーがそれを見る**サービスで、特定の組織専用ではない。**ハッカソンの開発時間は1日程度**。現在は**仕様検討フェーズ**で、コードはまだない。技術スタックは `docs/tech-stack.md` で決定済み。
+Googleマイマップのような観光マップWebサービスを作る。**ユーザーがマップを作って公開し、別のユーザーがそれを見る**サービスで、特定の組織専用ではない。**ハッカソンの開発時間は1日程度**。現在は**実装フェーズ**。技術スタックは `docs/tech-stack.md` で決定済み。
 
 ## 提案の柱（仕様の前提）
 
@@ -20,9 +20,46 @@ Googleマイマップのような観光マップWebサービスを作る。**ユ
 - **マップページのLP化**: マップページをランディングページのようにカスタマイズできる（ヘッダー画像、説明文、セクション構成など）
 - **ルート表示**: Googleマップの経路URLを開く
 
-## 未決事項
+## 決定済みの仕様
 
-技術構成は `docs/tech-stack.md`、公開 URL は `docs/public-url.md`、デモシナリオは `docs/demo-scenario.md`、画面・機能の範囲と担当分けは `docs/team-plan.md` で決定済み。雛形を作ったら、このファイルにコマンド（dev / build / test）とアーキテクチャを追記すること。
+技術構成は `docs/tech-stack.md`、公開 URL は `docs/public-url.md`、デモシナリオは `docs/demo-scenario.md`、画面・機能の範囲と担当分けは `docs/team-plan.md`。
+
+## コマンド
+
+| コマンド | 内容 |
+|---|---|
+| `pnpm dev` | 開発サーバー（http://localhost:5173）。D1 / R2 もローカルで動く |
+| `pnpm build` | 型チェック + ビルド |
+| `pnpm lint` / `pnpm format` | Biome でチェック / 自動修正 |
+| `pnpm test` | Vitest |
+| `pnpm db:reset` | ローカル DB を作り直してデモデータを入れる |
+| `pnpm db:generate` | `schema.ts` を変えたらマイグレーションを生成（その後 `pnpm db:migrate`） |
+| `pnpm typegen` | `wrangler.jsonc` を変えたら `Env` の型を作り直す |
+| `pnpm deploy` | Cloudflare Workers にデプロイ |
+
+## アーキテクチャ
+
+1つの Vite プロジェクトを1つの Cloudflare Worker にデプロイする。`/api/*` だけ Worker（Hono）が受け、それ以外は SPA を返す（`wrangler.jsonc` の `assets`）。
+
+```
+src/
+  worker/              API（Hono）。index.ts にルート、auth.ts に BetterAuth
+    db/schema.ts       Drizzle のスキーマ（変えたら pnpm db:generate）
+  client/              SPA（React）
+    routes/            画面。TanStack Router のファイルベースルーティング（route-tree.gen.ts は自動生成）
+    components/public/ 公開ページの部品（#30）
+    components/admin/  管理画面の部品（#31 #13）
+    components/ui/     shadcn/ui（`pnpm dlx shadcn@latest add <名前>` で追加）
+    lib/api.ts         API クライアント（Hono RPC。Worker のルートから型が付く）
+    mock-data.ts       部品づくり用の仮データ
+  shared/              Worker とフロントで共有する純粋関数（テストはここに置く）
+db/                    seed.sql（デモデータ）と reset.sql
+drizzle/               マイグレーション（自動生成）
+```
+
+- 管理 API（`/api/admin/*`）はログイン必須。マップ単位の API は必ず `ownerId` で絞り、他人のマップは 404 を返す
+- 公開 API は `published = true` のマップだけ返す。掲載期間外のスポットは API の時点で除く（`src/shared/spot-period.ts`）
+- デモ用ログイン: `kanko@example.com` / `demo-pass-1234`（`db/seed.sql`）
 
 ## 開発方針
 
@@ -34,7 +71,7 @@ Googleマイマップのような観光マップWebサービスを作る。**ユ
 - **Issue は細かく切りすぎない**。関連する作業はなるべく1つの PR にまとめる（1 PR で複数 Issue を閉じてよい）
 - **コードレビューはエージェントに任せる**。PR を作る前に Claude Code の `/code-review` でセルフレビューし、指摘を直してから PR を出す（`--fix` で修正まで任せてもよい）
   - プロジェクト固有の観点が増えてきたら、専用のレビューエージェント（`.claude/agents/`）に切り出す
-- **検証はローカルで行う**。CI は今は導入しない。PR を出す前に、手元で動作確認と lint / test を通す（コマンドは技術選定後に追記）
+- **検証はローカルで行う**。CI は今は導入しない。PR を出す前に、手元で動作確認と `pnpm lint` / `pnpm test` / `pnpm build` を通す
 
 ## ブランチ運用（GitHub Flow）
 
@@ -64,6 +101,7 @@ Googleマイマップのような観光マップWebサービスを作る。**ユ
   - 日本語のファイル名は使わない（Mac と Windows で Unicode 正規化が異なり、二重登録や文字化けの原因になる）
   - 大文字小文字だけが違う名前を作らない（Windows では同じファイル扱い）
   - Windows の予約名（`CON`, `PRN`, `AUX`, `NUL`, `COM1` など）と `: ? * < > | "` を使わない
+  - 例外: TanStack Router のルートファイル（`src/client/routes/`）は `$mapId.tsx` や `_authed` のように記法どおりの名前にする
 - シンボリックリンクを使わない（`CLAUDE.md` は `@AGENTS.md` の読み込みで対応している）
 - スクリプトやコマンドは Windows でも動くものにする（例: npm scripts で `rm -rf` や `VAR=value cmd` を使わない）
 
