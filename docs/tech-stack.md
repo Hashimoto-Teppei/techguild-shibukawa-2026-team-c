@@ -17,10 +17,13 @@
 
 - **構成**: SPA と Hono API を同じプロジェクトに置き、`@cloudflare/vite-plugin` で `vite dev` 1本で D1 / R2 込みのローカル開発をする
 - **ログイン**: BetterAuth（Drizzle アダプタで D1 に保存）。D1 はリクエストごとの binding なので、auth インスタンスはリクエスト内で生成する
+  - 公開サインアップは無効にし、職員アカウントは管理者が作る
+- **公開 URL**: QR で配るので、パスと search params（キー名・値）は一度配ったら変えない
+- **Google Maps API キー**: HTTP リファラー制限と、使う API だけに絞る制限をかける
 - **UI**: shadcn/ui。必要なコンポーネントだけ追加する
 - **URL の状態**（表示中レイヤーなど）: TanStack Router の search params を Zod で型付けして持つ。QR でレイヤーを絞った URL も配れる
 - **ルート表示**: Google マップの経路 URL（`https://www.google.com/maps/dir/?api=1&destination=...`）を開く。Directions API は使わない
-- **画像**: LP の画像は R2 に保存する
+- **画像**: LP の画像は R2 に保存する。アップロード時に Worker 側で画像の Content-Type とサイズ上限をチェックする
 - **テスト**: Vitest。臨時スポットの表示判定などの純粋関数に絞る
 - **アカウント**: Google Maps API キー・Cloudflare アカウントは橋本が用意する
 
