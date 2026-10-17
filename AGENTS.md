@@ -22,7 +22,7 @@ Googleマイマップのような観光マップWebサービスを作る。**ユ
 
 ## 決定済みの仕様
 
-技術構成は `docs/tech-stack.md`、公開 URL は `docs/public-url.md`、デモシナリオは `docs/demo-scenario.md`、画面・機能の範囲と担当分けは `docs/team-plan.md`、レイヤーの項目は `docs/layer-fields.md`。用語は `GLOSSARY.md` に合わせる。
+技術構成は `docs/tech-stack.md`、公開 URL は `docs/public-url.md`、デモシナリオは `docs/demo-scenario.md`、画面・機能の範囲と担当分けは `docs/team-plan.md`、レイヤーの項目は `docs/layer-fields.md`、配色・書体・動きは `docs/visual-design.md`、UI 改善の方針と文言（岡山弁）は `docs/ui-ux.md`。用語は `GLOSSARY.md` に合わせる。
 
 ## コマンド
 
@@ -53,11 +53,12 @@ src/
     db/schema.ts       Drizzle のスキーマ（変えたら mise run db:generate）
   client/              SPA（React）
     routes/            画面。TanStack Router のファイルベースルーティング（route-tree.gen.ts は自動生成）
-    components/public/ 公開ページの部品（#30）
+    components/public/ 公開ページの部品（#30）。波（wave.tsx）とトップの1日の空（day-sky.tsx）
     components/admin/  管理画面の部品（#31 #13）
     components/ui/     shadcn/ui（`pnpm dlx shadcn@latest add <名前>` で追加）
     lib/api.ts         API クライアント（Hono RPC。Worker のルートから型が付く）
     mock-data.ts       部品づくり用の仮データ
+    styles.css         色のトークン（docs/visual-design.md）。fonts.css は見出しフォントで、main.tsx から後読み
   shared/              Worker とフロントで共有する純粋関数（テストはここに置く）
 db/                    seed.sql（デモデータ）と reset.sql
 drizzle/               マイグレーション（自動生成）
