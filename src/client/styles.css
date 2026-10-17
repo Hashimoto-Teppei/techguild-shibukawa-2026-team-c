@@ -1,13 +1,20 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: "Geist Variable", sans-serif;
+  --font-heading: "Dela Gothic One", var(--font-sans);
+  /* 本文は端末のフォント。和文 Web フォントは CSS だけで重く、最初の表示を遅らせる */
+  --font-sans: system-ui, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --radius-panel: 1.75rem;
+  --color-ink: var(--ink);
+  --color-sea: var(--sea);
+  --color-lagoon: var(--lagoon);
+  --color-sand: var(--sand);
+  --color-buoy: var(--buoy);
+  --color-foam: var(--foam);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,72 +56,46 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  /* 渋川の浜の色。ink は瀬戸の藍で、黒の代わりに使う */
+  --ink: #0b2e4f;
+  --sea: #0e7fb8;
+  --lagoon: #3cc8d6;
+  --sand: #ead3a2;
+  --buoy: #ffc72c;
+  --foam: #f3f9fa;
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: var(--foam);
+  --foreground: var(--ink);
+  --card: #fff;
+  --card-foreground: var(--ink);
+  --popover: #fff;
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: #fff;
+  --secondary: #e3eff2;
+  --secondary-foreground: var(--ink);
+  --muted: #e3eff2;
+  --muted-foreground: #4f6a80;
+  --accent: var(--buoy);
+  --accent-foreground: var(--ink);
+  --destructive: #c62f2f;
+  --border: #cfe0e6;
+  --input: #b9cfd8;
+  --ring: var(--sea);
+  --chart-1: var(--sea);
+  --chart-2: var(--lagoon);
+  --chart-3: var(--buoy);
+  --chart-4: var(--sand);
+  --chart-5: var(--ink);
+  --radius: 0.75rem;
+  --sidebar: var(--foam);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: #fff;
+  --sidebar-accent: #e3eff2;
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--sea);
 }
 
 @layer base {
@@ -126,6 +107,43 @@
   }
   html {
     @apply font-sans;
+  }
+  /* キーボード操作のフォーカス枠。暗い背景（.on-dark）の上ではブイ色にする */
+  :focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .on-dark :focus-visible {
+    outline-color: var(--buoy);
+  }
+}
+
+/* 波の帯を横に流す。帯は2周期ぶん描いてあり、半分ずらすと継ぎ目なくつながる */
+@keyframes wave-drift {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.wave-drift {
+  animation: wave-drift var(--wave-speed, 14s) linear infinite;
+}
+
+/* 星と町の灯りのまたたき */
+@keyframes twinkle {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.twinkle {
+  animation: twinkle 3.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-drift,
+  .twinkle {
+    animation: none;
   }
 }
 

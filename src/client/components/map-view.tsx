@@ -49,10 +49,12 @@ export function MapView({ spots, selectedId, onSelect, onMapClick, onSpotDrag }:
             onDragEnd={(e) => e.latLng && onSpotDrag?.(s.id, e.latLng.toJSON())}
             zIndex={s.id === selectedId ? 1 : 0}
           >
+            {/* styles.css の --sea / --buoy / --ink と同じ色 */}
             <Pin
-              background={s.id === selectedId ? "#2563eb" : undefined}
-              borderColor={s.id === selectedId ? "#1e40af" : undefined}
-              glyphColor={s.id === selectedId ? "#fff" : undefined}
+              background={s.id === selectedId ? "#ffc72c" : "#0e7fb8"}
+              borderColor="#0b2e4f"
+              glyphColor={s.id === selectedId ? "#0b2e4f" : "#fff"}
+              scale={s.id === selectedId ? 1.3 : 1}
             />
           </AdvancedMarker>
         ))}
