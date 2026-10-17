@@ -255,7 +255,7 @@ function Header({ title, imageKey }: { title: string; imageKey: string | null })
         )}
       >
         <Link to="/" className="w-fit rounded-full bg-ink/70 px-3 py-1.5 text-sm font-bold">
-          渋川マップ
+          たまりんマップ
         </Link>
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
