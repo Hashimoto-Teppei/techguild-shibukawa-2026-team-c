@@ -19,8 +19,8 @@ type Props = {
   onSpotDrag?: (id: string, pos: LatLng) => void;
 };
 
-// スポットがないときの中心（仮の値。#32 のデータに合わせて直す）
-const SHIBUKAWA = { lat: 34.5689, lng: 133.8895 };
+// スポットがないときの中心（渋川海岸）
+const SHIBUKAWA = { lat: 34.4539, lng: 133.9047 };
 
 // Google マップにスポットのピンを表示する。公開ページと管理画面で共用する
 export function MapView({ spots, selectedId, onSelect, onMapClick, onSpotDrag }: Props) {
