@@ -31,7 +31,7 @@ Googleマイマップのような観光マップWebサービスを作る。現�
 - `main` は常に動く状態。直接 push しない（ブランチ保護は未設定なので運用で守る）。変更はすべて PR 経由
 - 作業ブランチは `main` から `<type>/<内容>` で切る。type は `feat` / `fix` / `docs` / `chore`（例: `feat/layer-filter`）
 - 1 Issue = 1 PR。本文に `Closes #<番号>` を書く。PR は小さく、半日以内のマージを目安にする
-- レビュー承認は必須ではない。マージは squash merge のみ。マージ後ブランチは自動削除
+- レビュー承認は必須ではない。マージは通常のマージ（merge commit）のみ。PR 単位の履歴は `git log --first-parent main` で見る。マージ後ブランチは自動削除
 
 ## Agent skills
 
