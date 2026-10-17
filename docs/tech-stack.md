@@ -7,7 +7,7 @@
 | 区分 | 採用 |
 |---|---|
 | 基盤 | mise / Node 24 / pnpm 12 / Biome / Vitest |
-| フロント | React / TypeScript / Vite / TailwindCSS v4 / shadcn/ui / TanStack Router / TanStack Query / react-hook-form / Zod |
+| フロント | React / TypeScript / Vite / TailwindCSS v4 / shadcn/ui / TanStack Router / TanStack Query / react-hook-form / Zod / motion（アニメーション） / `@fontsource/dela-gothic-one`（見出し） |
 | API | Hono（RPC の `hc` でフロントと型共有） / Drizzle / BetterAuth |
 | インフラ | Cloudflare Workers（Static Assets） / D1 / R2 / `@cloudflare/vite-plugin` |
 | 地図 | Google Maps Platform（`@vis.gl/react-google-maps`） |

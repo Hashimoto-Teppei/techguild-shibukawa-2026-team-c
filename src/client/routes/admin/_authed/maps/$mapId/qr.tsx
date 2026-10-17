@@ -40,7 +40,7 @@ function QrPage() {
         <Link to="/admin/maps/$mapId" params={{ mapId }} className="text-sm underline">
           ← マップ編集に戻る
         </Link>
-        <h1 className="text-xl font-bold">QRコードを発行</h1>
+        <h1 className="font-heading text-2xl">QRコードを発行</h1>
         <div className="flex flex-wrap items-end gap-3">
           <label className="flex flex-col gap-1 text-sm font-medium">
             QRコードに含めるレイヤー

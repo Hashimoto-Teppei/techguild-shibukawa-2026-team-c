@@ -45,7 +45,7 @@ function AdminMapListPage() {
   return (
     <main className="mx-auto max-w-2xl space-y-4 p-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">自分のマップ</h1>
+        <h1 className="font-heading text-2xl">自分のマップ</h1>
         <Button variant="ghost" size="sm" onClick={onSignOut}>
           ログアウト
         </Button>

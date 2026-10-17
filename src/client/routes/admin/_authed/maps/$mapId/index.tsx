@@ -96,7 +96,7 @@ function MapEditPage() {
         ← 自分のマップ
       </Link>
       <section className="space-y-3">
-        <h1 className="text-2xl font-bold">{data.title}</h1>
+        <h1 className="font-heading text-3xl">{data.title}</h1>
         <div className="flex flex-wrap items-center gap-3">
           <Badge variant={data.published ? "default" : "secondary"}>
             {data.published ? "公開中" : "非公開"}
