@@ -1,0 +1,10 @@
+# Normalize line endings to LF for Mac / Windows mixed team
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary

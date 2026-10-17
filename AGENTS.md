@@ -33,6 +33,37 @@ Googleマイマップのような観光マップWebサービスを作る。現�
 - 1 Issue = 1 PR。本文に `Closes #<番号>` を書く。PR は小さく、半日以内のマージを目安にする
 - レビュー承認は必須ではない。マージは通常のマージ（merge commit）のみ。PR 単位の履歴は `git log --first-parent main` で見る。マージ後ブランチは自動削除
 
+## Issue の進め方
+
+マイルストーン ①価値検討 → ②仕様決定 → ③実装 の順に進める。前後関係は GitHub の issue dependencies（blocked by）に登録してあるので、着手前に確認する。
+
+検討系の Issue（`question`）は、議論を Issue 上で行い、結論を `docs/` に書いて PR で入れる（PR 本文の `Closes #<番号>` で Issue を閉じる）。
+
+## ドキュメント構成
+
+| 置き場所 | 内容 |
+|---|---|
+| `GLOSSARY.md` | 用語集（ドメインモデル） |
+| `docs/product/` | ①価値検討の結論（ペルソナ、課題、競合比較、成功指標、運用） |
+| `docs/spec/` | ②仕様（利用フロー、MVP、画面仕様） |
+| `docs/adr/` | 技術判断の記録。`0001-map-library.md` のように4桁連番 |
+| `docs/research/` | 調査メモ・統計などの出典 |
+| `docs/agents/` | エージェントスキルの設定 |
+
+- フォルダは最初のドキュメントを書くときに作る（空フォルダは作らない）
+- 画像はそのドキュメントと同じフォルダの `images/` に置く
+
+## ファイル管理（Mac / Windows 混在）
+
+メンバーには Windows ユーザーがいる。改行は `.gitattributes` で LF、文字コード等は `.editorconfig` で統一している。
+
+- ファイル名・フォルダ名は**英小文字とハイフン**（例: `user-flows.md`）。中身は日本語でよい。`README.md` / `AGENTS.md` / `GLOSSARY.md` など慣例で大文字のものは除く
+  - 日本語のファイル名は使わない（Mac と Windows で Unicode 正規化が異なり、二重登録や文字化けの原因になる）
+  - 大文字小文字だけが違う名前を作らない（Windows では同じファイル扱い）
+  - Windows の予約名（`CON`, `PRN`, `AUX`, `NUL`, `COM1` など）と `: ? * < > | "` を使わない
+- シンボリックリンクを使わない（`CLAUDE.md` は `@AGENTS.md` の読み込みで対応している）
+- スクリプトやコマンドは Windows でも動くものにする（例: npm scripts で `rm -rf` や `VAR=value cmd` を使わない）
+
 ## Agent skills
 
 ### Issue tracker
