@@ -1,13 +1,16 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/admin/_authed/")({ component: AdminMapListPage });
 
-// 自分のマップ一覧・新規作成（見た目は #31）
+// 自分のマップ一覧・新規作成
 function AdminMapListPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -45,27 +48,36 @@ function AdminMapListPage() {
           ログアウト
         </Button>
       </div>
-      <ul className="space-y-2">
+      <ul className="divide-y rounded-xl border">
         {data?.map((m) => (
           <li key={m.id}>
-            <Link to="/admin/maps/$mapId" params={{ mapId: m.id }} className="underline">
-              {m.title}
+            <Link
+              to="/admin/maps/$mapId"
+              params={{ mapId: m.id }}
+              className="flex items-center gap-2 p-4 hover:bg-muted"
+            >
+              <span className="flex-1 font-medium">{m.title}</span>
+              <Badge variant={m.published ? "default" : "secondary"}>
+                {m.published ? "公開中" : "非公開"}
+              </Badge>
+              <ChevronRight className="size-4 text-muted-foreground" />
             </Link>
-            {!m.published && <span className="ml-2 text-sm text-neutral-500">非公開</span>}
           </li>
         ))}
       </ul>
       <form onSubmit={onCreate} className="flex gap-2">
-        <input
+        <Input
           name="title"
           placeholder="新しいマップの名前"
           required
-          className="flex-1 border p-2"
+          aria-label="新しいマップの名前"
         />
         <Button type="submit">作成</Button>
       </form>
-      {error && <p className="text-red-600">{error}</p>}
-      <p className="text-sm text-neutral-500">作ったマップは非公開です。編集画面で公開できます</p>
+      {error && <p className="text-sm text-destructive">{error}</p>}
+      <p className="text-sm text-muted-foreground">
+        作ったマップは非公開です。編集画面で公開できます
+      </p>
     </main>
   );
 }
