@@ -1,4 +1,4 @@
--- デモ用の初期データ（ローカル: pnpm db:seed）。中身は #32 のスプレッドシートで差し替える
+-- デモ用の初期データ（ローカル: mise run db:seed）。中身は #32 のスプレッドシートで差し替える
 -- ログイン: kanko@example.com / other@example.com（パスワードはどちらも demo-pass-1234）
 
 INSERT INTO user (id, name, email, email_verified) VALUES

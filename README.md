@@ -14,6 +14,7 @@
 ```sh
 git clone git@github.com:Hashimoto-Teppei/techguild-shibukawa-2026-team-c.git
 cd techguild-shibukawa-2026-team-c
+mise trust          # このリポジトリの mise.toml を信頼する（初回のみ）
 mise install        # Node 24 と pnpm 12 が入る（mise がなければ https://mise.jdx.dev から入れる）
 pnpm install
 ```
@@ -21,15 +22,15 @@ pnpm install
 `.dev.vars.example` を `.dev.vars` に、`.env.example` を `.env` にコピーします（エクスプローラーや Finder でコピーしてもよい）。Google Maps の API キーは橋本から受け取って `.env` に書きます。
 
 ```sh
-pnpm db:reset       # ローカル DB を作ってデモデータを入れる
-pnpm dev            # http://localhost:5173 を開く
+mise run db:reset   # ローカル DB を作ってデモデータを入れる
+mise run dev        # http://localhost:5173 を開く
 ```
 
-`no such table` のエラーが出たら、もう一度 `pnpm db:reset` を実行してください（DB の設定が変わるとローカル DB が作り直しになります）。
+`no such table` のエラーが出たら、もう一度 `mise run db:reset` を実行してください（DB の設定が変わるとローカル DB が作り直しになります）。
 
 管理画面は http://localhost:5173/admin/login です。デモ用アカウントは `kanko@example.com` / `demo-pass-1234` です。
 
-PR を出す前に `pnpm lint` と `pnpm test` を通してください。ほかのコマンドは [AGENTS.md](AGENTS.md) にあります。
+PR を出す前に `mise run lint` と `mise run test` を通してください。ほかのコマンドは [AGENTS.md](AGENTS.md) にあります。
 
 ### Windows の場合
 

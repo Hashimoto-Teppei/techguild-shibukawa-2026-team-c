@@ -1,3 +1,67 @@
 [tools]
 node = "24"
 pnpm = "12"
+
+[env]
+_.path = ["{{config_root}}/node_modules/.bin"]
+
+# `mise run <タスク名>` で実行する。一覧は `mise tasks`
+# 本番に触るタスクは prod: で始まり、実行前に確認が出る（橋本のみ実行）
+
+[tasks.dev]
+description = "開発サーバー（http://localhost:5173）。D1 / R2 もローカルで動く"
+run = "vite"
+
+[tasks.build]
+description = "型チェック + ビルド"
+run = ["tsc -b", "vite build"]
+
+[tasks.lint]
+description = "Biome でチェック"
+run = "biome check ."
+
+[tasks.format]
+description = "Biome で自動修正"
+run = "biome check --write ."
+
+[tasks.test]
+description = "Vitest"
+run = "vitest run"
+
+[tasks.typegen]
+description = "wrangler.jsonc を変えたら Env の型を作り直す"
+run = "wrangler types src/worker/env.d.ts"
+
+[tasks."db:generate"]
+description = "schema.ts を変えたらマイグレーションを生成（その後 db:migrate）"
+run = "drizzle-kit generate"
+
+[tasks."db:migrate"]
+description = "ローカル DB にマイグレーションを適用"
+run = "wrangler d1 migrations apply DB --local"
+
+[tasks."db:seed"]
+description = "ローカル DB にデモデータを入れる"
+run = "wrangler d1 execute DB --local --file=db/seed.sql"
+
+[tasks."db:reset"]
+description = "ローカル DB を作り直してデモデータを入れる"
+run = [
+  "wrangler d1 execute DB --local --file=db/reset.sql",
+  { task = "db:migrate" },
+  { task = "db:seed" },
+]
+
+[tasks."prod:migrate"]
+description = "【本番】D1 にマイグレーションを適用"
+confirm = "本番 D1 にマイグレーションを適用します。よろしいですか？"
+run = "wrangler d1 migrations apply DB --remote"
+
+[tasks."prod:deploy"]
+description = "【本番】ビルド → 本番 D1 にマイグレーション → Cloudflare Workers にデプロイ"
+confirm = "本番環境にデプロイします。よろしいですか？"
+run = [
+  { task = "build" },
+  "wrangler d1 migrations apply DB --remote",
+  "wrangler deploy",
+]

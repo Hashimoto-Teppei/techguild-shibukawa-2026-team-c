@@ -2,21 +2,6 @@
   "name": "techguild-shibukawa-2026-team-c",
   "private": true,
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "deploy": "pnpm build && pnpm db:migrate:remote && wrangler deploy",
-    "lint": "biome check .",
-    "format": "biome check --write .",
-    "test": "vitest run",
-    "typegen": "wrangler types src/worker/env.d.ts",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "wrangler d1 migrations apply DB --local",
-    "db:seed": "wrangler d1 execute DB --local --file=db/seed.sql",
-    "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
-    "db:reset": "wrangler d1 execute DB --local --file=db/reset.sql && pnpm db:migrate && pnpm db:seed"
-  },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",
     "@hookform/resolvers": "^5.9.1",

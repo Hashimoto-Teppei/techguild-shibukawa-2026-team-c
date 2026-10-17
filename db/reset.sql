@@ -1,4 +1,4 @@
--- ローカル DB を空にする（pnpm db:reset から使う）
+-- ローカル DB を空にする（mise run db:reset から使う）
 DROP TABLE IF EXISTS spot_layers;
 DROP TABLE IF EXISTS spots;
 DROP TABLE IF EXISTS layers;
