@@ -131,4 +131,4 @@ Issue と仕様は GitHub Issues で管理（`gh` CLI）。See `docs/agents/issu
 
 ### Domain docs
 
-single-context（ルートに `GLOSSARY.md` と `docs/adr/`）。See `docs/agents/domain.md`.
+single-context（ルートに `GLOSSARY.md`、決定は `docs/` 直下）。See `docs/agents/domain.md`.
