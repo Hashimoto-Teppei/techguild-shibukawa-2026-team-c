@@ -1,12 +1,15 @@
 import { filterByLayer } from "@shared/layer-filter";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { MapPin, Navigation } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { MapView } from "@/components/map-view";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/lib/api";
 import { directionsUrl, imageUrl } from "@/lib/urls";
+import { cn } from "@/lib/utils";
 
 // ?layer= は QR で配るので、キー名を変えない（docs/public-url.md）
 const searchSchema = z.object({ layer: z.string().optional().catch(undefined) });
@@ -16,7 +19,7 @@ export const Route = createFileRoute("/m/$mapId")({
   component: MapPage,
 });
 
-// マップページ（LP）。見た目は #30 の部品（components/public/）に差し替えていく
+// マップページ（LP）
 function MapPage() {
   const { mapId } = Route.useParams();
   const { layer } = Route.useSearch();
@@ -41,8 +44,8 @@ function MapPage() {
   if (isPending) return null;
   // 一度読めていれば、再取得に失敗しても前のデータを出し続ける
   if (isError && !data)
-    return <p className="p-4">読み込めませんでした。時間をおいて再読み込みしてください</p>;
-  if (!data) return <p className="p-4">このマップは公開されていません</p>;
+    return <Notice>読み込めませんでした。時間をおいて再読み込みしてください</Notice>;
+  if (!data) return <Notice>このマップは公開されていません</Notice>;
 
   const { activeLayerId, spots } = filterByLayer(data.spots, data.layers, layer);
   const selected = spots.find((s) => s.id === selectedId);
@@ -51,10 +54,10 @@ function MapPage() {
   return (
     <main className="mx-auto max-w-2xl">
       {data.headerImageKey && (
-        <img src={imageUrl(data.headerImageKey)} alt="" className="h-48 w-full object-cover" />
+        <img src={imageUrl(data.headerImageKey)} alt="" className="h-56 w-full object-cover" />
       )}
-      <div className="p-4">
-        <h1 className="text-xl font-bold">{data.title}</h1>
+      <div className="space-y-2 p-4">
+        <h1 className="text-2xl font-bold">{data.title}</h1>
         <p className="whitespace-pre-wrap">{data.description}</p>
       </div>
 
@@ -78,14 +81,21 @@ function MapPage() {
       </div>
 
       {selected && (
-        <section ref={detailRef} className="space-y-2 p-4">
-          <h2 className="text-lg font-bold">{selected.name}</h2>
-          <p className="whitespace-pre-wrap">{selected.description}</p>
-          <Button asChild>
-            <a href={directionsUrl(selected)} target="_blank" rel="noreferrer">
-              経路
-            </a>
-          </Button>
+        <section ref={detailRef} className="p-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">{selected.name}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="whitespace-pre-wrap">{selected.description}</p>
+              <Button asChild size="lg" className="w-full">
+                <a href={directionsUrl(selected)} target="_blank" rel="noreferrer">
+                  <Navigation />
+                  経路を見る
+                </a>
+              </Button>
+            </CardContent>
+          </Card>
         </section>
       )}
 
@@ -94,9 +104,13 @@ function MapPage() {
           <li key={s.id}>
             <button
               type="button"
-              className="w-full py-3 text-left"
+              className={cn(
+                "flex w-full items-center gap-2 py-3 text-left",
+                s.id === selected?.id && "font-bold",
+              )}
               onClick={() => setSelectedId(s.id)}
             >
+              <MapPin className="size-4 shrink-0 text-muted-foreground" />
               {s.name}
             </button>
           </li>
@@ -115,5 +129,16 @@ function LayerLink({ layerId, label, active, onClick }: LayerLinkProps) {
         {label}
       </Link>
     </Button>
+  );
+}
+
+function Notice({ children }: { children: React.ReactNode }) {
+  return (
+    <main className="flex min-h-svh flex-col items-center justify-center gap-4 p-4 text-center">
+      <p className="text-lg">{children}</p>
+      <Link to="/" className="text-sm underline">
+        公開中のマップを見る
+      </Link>
+    </main>
   );
 }
