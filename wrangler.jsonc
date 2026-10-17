@@ -12,11 +12,14 @@
     {
       "binding": "DB",
       "database_name": "team-c",
-      // デプロイ時に `wrangler d1 create team-c` の ID に置き換える
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "4c5c7c8e-ebbd-40db-b47a-b333c6e019b2",
       "migrations_dir": "drizzle"
     }
   ],
   "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "team-c-images" }],
+  // ローカルでは .dev.vars の値で上書きされる
+  "vars": {
+    "BETTER_AUTH_URL": "https://techguild-shibukawa-2026-team-c.hashimoto-2f0.workers.dev"
+  },
   "observability": { "enabled": true }
 }
