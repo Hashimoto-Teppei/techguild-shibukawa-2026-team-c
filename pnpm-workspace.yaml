@@ -1,3 +1,7 @@
+# 発表スライド（Slidev）は内蔵の Vite / Vue をアプリと分けるため、別パッケージにする
+packages:
+  - slides
+
 allowBuilds:
   esbuild: true
   workerd: true
