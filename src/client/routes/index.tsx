@@ -28,7 +28,7 @@ function MapListPage() {
       <header className="on-dark relative min-h-svh overflow-hidden bg-ink text-white">
         <DaySky />
         <nav className="relative z-10 mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <span className="font-heading text-lg">渋川マップ</span>
+          <span className="font-heading text-lg">たまりんマップ</span>
           <Link
             to="/admin"
             className="rounded-full px-4 py-2 text-sm font-bold ring-1 ring-white/40 transition-colors hover:bg-white hover:text-ink"

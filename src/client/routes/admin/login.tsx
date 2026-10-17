@@ -34,7 +34,7 @@ function LoginPage() {
   return (
     <main className="on-dark relative flex min-h-svh flex-col items-center justify-center gap-6 overflow-hidden bg-ink p-4">
       <Link to="/" className="relative font-heading text-xl text-white">
-        渋川マップ
+        たまりんマップ
       </Link>
       <Card className="relative z-10 w-full max-w-sm rounded-panel p-2">
         <CardHeader>
