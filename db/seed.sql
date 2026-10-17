@@ -19,10 +19,10 @@ INSERT INTO layers (id, map_id, name, sort_order) VALUES
   ('date', 'shibukawa', 'デート向け', 1);
 
 INSERT INTO spots (id, map_id, name, description, lat, lng, start_date, end_date) VALUES
-  ('spot-beach', 'shibukawa', '渋川海岸', '遠浅で穏やかな海水浴場。', 34.5689, 133.8895, NULL, NULL),
-  ('spot-ojigatake', 'shibukawa', '王子が岳', '瀬戸内海を一望できる展望スポット。', 34.5636, 133.9047, NULL, NULL),
-  ('spot-event', 'shibukawa', 'ビーチイベント', '週末限定の臨時スポット。', 34.5695, 133.8880, '2026-01-01', '2099-12-31'),
-  ('spot-cafe', 'demo-cafe', '海辺のカフェ', '', 34.5680, 133.8900, NULL, NULL);
+  ('spot-beach', 'shibukawa', '渋川海岸', '遠浅で穏やかな海水浴場。', 34.4539, 133.9047, NULL, NULL),
+  ('spot-ojigatake', 'shibukawa', '王子が岳', '瀬戸内海を一望できる展望スポット。', 34.4619, 133.8822, NULL, NULL),
+  ('spot-event', 'shibukawa', 'ビーチイベント', '週末限定の臨時スポット。', 34.4536, 133.9040, '2026-01-01', '2099-12-31'),
+  ('spot-cafe', 'demo-cafe', '海辺のカフェ', '', 34.4550, 133.9058, NULL, NULL);
 
 INSERT INTO spot_layers (spot_id, layer_id) VALUES
   ('spot-beach', 'family'),
