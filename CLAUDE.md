@@ -25,3 +25,17 @@ Googleマイマップのような観光マップWebサービスを作る。現�
 - 管理者認証の方式
 
 仕様・技術選定が決まったら、このファイルにコマンド（dev / build / test）とアーキテクチャを追記すること。
+
+## Agent skills
+
+### Issue tracker
+
+Issue と仕様は GitHub Issues で管理（`gh` CLI）。See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+デフォルトの5ラベル（needs-triage / needs-info / ready-for-agent / ready-for-human / wontfix）を使用。See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+single-context（ルートに `GLOSSARY.md` と `docs/adr/`）。See `docs/agents/domain.md`.
