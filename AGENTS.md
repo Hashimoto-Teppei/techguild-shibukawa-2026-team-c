@@ -26,16 +26,22 @@ Googleマイマップのような観光マップWebサービスを作る。**ユ
 
 ## コマンド
 
+タスクは `mise.toml` で管理する（`package.json` の scripts は使わない）。`mise run <タスク名>` で実行し、一覧は `mise tasks` で見られる。
+
 | コマンド | 内容 |
 |---|---|
-| `pnpm dev` | 開発サーバー（http://localhost:5173）。D1 / R2 もローカルで動く |
-| `pnpm build` | 型チェック + ビルド |
-| `pnpm lint` / `pnpm format` | Biome でチェック / 自動修正 |
-| `pnpm test` | Vitest |
-| `pnpm db:reset` | ローカル DB を作り直してデモデータを入れる |
-| `pnpm db:generate` | `schema.ts` を変えたらマイグレーションを生成（その後 `pnpm db:migrate`） |
-| `pnpm typegen` | `wrangler.jsonc` を変えたら `Env` の型を作り直す |
-| `pnpm deploy` | 本番 D1 にマイグレーションを適用してから Cloudflare Workers にデプロイ（橋本の Cloudflare アカウント） |
+| `mise run dev` | 開発サーバー（http://localhost:5173）。D1 / R2 もローカルで動く |
+| `mise run build` | 型チェック + ビルド |
+| `mise run lint` / `mise run format` | Biome でチェック / 自動修正 |
+| `mise run test` | Vitest |
+| `mise run db:reset` | ローカル DB を作り直してデモデータを入れる |
+| `mise run db:generate` | `schema.ts` を変えたらマイグレーションを生成（その後 `mise run db:migrate`） |
+| `mise run typegen` | `wrangler.jsonc` を変えたら `Env` の型を作り直す |
+| `mise run prod:deploy` | 【本番・橋本のみ】ビルド → 本番 D1 にマイグレーション → Cloudflare Workers にデプロイ |
+| `mise run prod:migrate` | 【本番・橋本のみ】本番 D1 にマイグレーションだけ適用 |
+
+- 本番に触るタスクは `prod:` で始まり、実行前に確認が出る。それ以外のタスクはローカルにしか作用しない
+- エージェントは `prod:` タスクを実行しない
 
 ## アーキテクチャ
 
@@ -44,7 +50,7 @@ Googleマイマップのような観光マップWebサービスを作る。**ユ
 ```
 src/
   worker/              API（Hono）。index.ts にルート、auth.ts に BetterAuth
-    db/schema.ts       Drizzle のスキーマ（変えたら pnpm db:generate）
+    db/schema.ts       Drizzle のスキーマ（変えたら mise run db:generate）
   client/              SPA（React）
     routes/            画面。TanStack Router のファイルベースルーティング（route-tree.gen.ts は自動生成）
     components/public/ 公開ページの部品（#30）
@@ -77,7 +83,7 @@ drizzle/               マイグレーション（自動生成）
 - **Issue は細かく切りすぎない**。関連する作業はなるべく1つの PR にまとめる（1 PR で複数 Issue を閉じてよい）
 - **コードレビューはエージェントに任せる**。PR を作る前に Claude Code の `/code-review` でセルフレビューし、指摘を直してから PR を出す（`--fix` で修正まで任せてもよい）
   - プロジェクト固有の観点が増えてきたら、専用のレビューエージェント（`.claude/agents/`）に切り出す
-- **検証はローカルで行う**。CI は今は導入しない。PR を出す前に、手元で動作確認と `pnpm lint` / `pnpm test` / `pnpm build` を通す
+- **検証はローカルで行う**。CI は今は導入しない。PR を出す前に、手元で動作確認と `mise run lint` / `mise run test` / `mise run build` を通す
 
 ## ブランチ運用（GitHub Flow）
 
