@@ -138,3 +138,34 @@ export const spotLayers = sqliteTable(
   },
   (t) => [primaryKey({ columns: [t.spotId, t.layerId] })],
 );
+
+// レイヤーの項目（docs/layer-fields.md）。並びは作成順
+export const layerFields = sqliteTable(
+  "layer_fields",
+  {
+    id: text("id").primaryKey(),
+    layerId: text("layer_id")
+      .notNull()
+      .references(() => layers.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    // 今は "text" だけ。型を足しても値はテキストのまま保存する
+    type: text("type").notNull().default("text"),
+    ...timestamps,
+  },
+  (t) => [index("layer_fields_layer_id_idx").on(t.layerId)],
+);
+
+// スポットをレイヤーから外しても消さない（入れ直せば戻る）
+export const spotFieldValues = sqliteTable(
+  "spot_field_values",
+  {
+    spotId: text("spot_id")
+      .notNull()
+      .references(() => spots.id, { onDelete: "cascade" }),
+    fieldId: text("field_id")
+      .notNull()
+      .references(() => layerFields.id, { onDelete: "cascade" }),
+    value: text("value").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.spotId, t.fieldId] })],
+);
