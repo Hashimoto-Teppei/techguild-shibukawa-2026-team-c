@@ -35,7 +35,7 @@ Googleマイマップのような観光マップWebサービスを作る。**ユ
 | `pnpm db:reset` | ローカル DB を作り直してデモデータを入れる |
 | `pnpm db:generate` | `schema.ts` を変えたらマイグレーションを生成（その後 `pnpm db:migrate`） |
 | `pnpm typegen` | `wrangler.jsonc` を変えたら `Env` の型を作り直す |
-| `pnpm deploy` | Cloudflare Workers にデプロイ |
+| `pnpm deploy` | 本番 D1 にマイグレーションを適用してから Cloudflare Workers にデプロイ（橋本の Cloudflare アカウント） |
 
 ## アーキテクチャ
 
@@ -59,7 +59,13 @@ drizzle/               マイグレーション（自動生成）
 
 - 管理 API（`/api/admin/*`）はログイン必須。マップ単位の API は必ず `ownerId` で絞り、他人のマップは 404 を返す
 - 公開 API は `published = true` のマップだけ返す。掲載期間外のスポットは API の時点で除く（`src/shared/spot-period.ts`）
-- デモ用ログイン: `kanko@example.com` / `demo-pass-1234`（`db/seed.sql`）
+- デモ用ログイン: `kanko@example.com` / `demo-pass-1234`（`db/seed.sql`）。本番では別のパスワードに変えてあり、リポジトリには置かない（橋本に聞く）
+
+## 本番環境
+
+- URL: https://techguild-shibukawa-2026-team-c.hashimoto-2f0.workers.dev
+- D1 `team-c` / R2 `team-c-images`。`BETTER_AUTH_SECRET` は `wrangler secret`、`BETTER_AUTH_URL` は `wrangler.jsonc` の `vars`
+- 本番 DB のデモデータは投入済み。`db/seed.sql` を本番に流さない（公開パスワードのアカウントができる）。入れ直しが必要なら橋本に頼む
 
 ## 開発方針
 
