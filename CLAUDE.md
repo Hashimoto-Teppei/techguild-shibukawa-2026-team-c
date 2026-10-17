@@ -26,6 +26,13 @@ Googleマイマップのような観光マップWebサービスを作る。現�
 
 仕様・技術選定が決まったら、このファイルにコマンド（dev / build / test）とアーキテクチャを追記すること。
 
+## ブランチ運用（GitHub Flow）
+
+- `main` は常に動く状態。直接 push しない（ruleset で保護）。変更はすべて PR 経由
+- 作業ブランチは `main` から `<type>/<内容>` で切る。type は `feat` / `fix` / `docs` / `chore`（例: `feat/layer-filter`）
+- 1 Issue = 1 PR。本文に `Closes #<番号>` を書く。PR は小さく、半日以内のマージを目安にする
+- レビュー承認は必須ではない。マージは squash merge のみ。マージ後ブランチは自動削除
+
 ## Agent skills
 
 ### Issue tracker
