@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { InferResponseType } from "hono/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MapView } from "@/components/map-view";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,10 +23,11 @@ function MapEditPage() {
   const { mapId } = Route.useParams();
   const queryClient = useQueryClient();
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [uploading, setUploading] = useState(false);
   // 編集中のスポット。"new" は新規追加
   const [editingId, setEditingId] = useState<string>();
-  const { data, isPending } = useQuery({
+  const { data, isPending, isError } = useQuery({
     queryKey: ["admin", "map", mapId],
     queryFn: async () => {
       const res = await mapApi.$get({ param: { mapId } });
@@ -39,21 +40,44 @@ function MapEditPage() {
   // 保存して画面を最新にする。失敗したら false
   async function save(request: Promise<Response>) {
     setError("");
+    setSuccess("");
     const res = await request.catch(() => null);
     if (!res) {
-      setError("通信できませんでした。電波の良いところでもう一度保存してください");
+      setError("通信できんかったけぇ、もういっぺん試してぇ");
       return false;
     }
     if (!res.ok) {
-      setError("保存できませんでした。入力内容を確認してください");
+      setError("保存できんかったけぇ、入力を見直してぇ");
       return false;
     }
     await queryClient.invalidateQueries({ queryKey: ["admin"] });
+    setSuccess("保存できたで");
     return true;
   }
 
-  if (isPending) return null;
-  if (!data) return <p className="p-4">マップが見つかりません</p>;
+  useEffect(() => {
+    if (!success) return;
+    const timer = window.setTimeout(() => setSuccess(""), 3000);
+    return () => window.clearTimeout(timer);
+  }, [success]);
+
+  if (isPending)
+    return (
+      <main className="mx-auto max-w-2xl p-4">
+        <p className="text-sm text-muted-foreground" role="status" aria-live="polite">
+          読み込みょーるけぇ、ちょい待ってぇ
+        </p>
+      </main>
+    );
+  if (isError && !data)
+    return (
+      <main className="mx-auto max-w-2xl p-4">
+        <p className="text-sm text-destructive" role="alert">
+          うまいこと読めんかったけぇ、時間おいて開き直してぇ
+        </p>
+      </main>
+    );
+  if (!data) return <p className="p-4">マップが見つからんかった</p>;
 
   const param = { mapId };
   const editing: AdminSpot | undefined =
@@ -62,6 +86,7 @@ function MapEditPage() {
   const formOpen = editingId === "new" || !!editing;
   const openForm = (id: string | undefined) => {
     setError("");
+    setSuccess("");
     setEditingId(id);
   };
 
@@ -92,8 +117,13 @@ function MapEditPage() {
         </div>
       </section>
 
-      {/* スポットのフォームを開いているときは、エラーをフォームの中に出す */}
+      {/* スポットのフォームを開いているときは、メッセージをフォームの中に出す */}
       {error && !formOpen && <p className="text-sm text-destructive">{error}</p>}
+      {success && !formOpen && (
+        <p className="text-sm text-emerald-700" role="status" aria-live="polite">
+          {success}
+        </p>
+      )}
 
       <Card>
         <CardHeader>
@@ -151,7 +181,7 @@ function MapEditPage() {
                 const image = input.files?.[0];
                 if (!image) return;
                 if (image.size > 10 * 1024 * 1024) {
-                  setError("画像が大きすぎます。10MB 以下の画像を選んでください");
+                  setError("画像が大きすぎるけぇ、10MB以下にしてぇ");
                   input.value = "";
                   return;
                 }
@@ -245,6 +275,7 @@ function MapEditPage() {
             <SpotForm
               key={editingId}
               saveError={error}
+              saveSuccess={success}
               spot={editing}
               layers={data.layers}
               onCancel={() => openForm(undefined)}
@@ -365,6 +396,7 @@ type SpotInput = Omit<AdminSpot, "id">;
 type SpotFormProps = {
   spot?: AdminSpot;
   saveError: string;
+  saveSuccess: string;
   layers: AdminMap["layers"];
   onSubmit: (input: SpotInput) => void;
   onCancel: () => void;
@@ -372,7 +404,15 @@ type SpotFormProps = {
 };
 
 // スポットの追加・編集。位置は地図をクリックしてピンを置き、ドラッグで調整する
-function SpotForm({ spot, saveError, layers, onSubmit, onCancel, onDelete }: SpotFormProps) {
+function SpotForm({
+  spot,
+  saveError,
+  saveSuccess,
+  layers,
+  onSubmit,
+  onCancel,
+  onDelete,
+}: SpotFormProps) {
   const [pos, setPos] = useState(spot && { lat: spot.lat, lng: spot.lng });
   // チェックしたレイヤーの項目だけ入力欄を出す
   const [layerIds, setLayerIds] = useState(spot?.layerIds ?? []);
@@ -380,13 +420,13 @@ function SpotForm({ spot, saveError, layers, onSubmit, onCancel, onDelete }: Spo
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!pos) return setError("地図をクリックして場所を決めてください");
+    if (!pos) return setError("地図をクリックして場所を決めてぇ");
     const form = new FormData(e.currentTarget);
     const date = (name: string) => String(form.get(name)) || null;
     const startDate = date("startDate");
     const endDate = date("endDate");
     if (startDate && endDate && startDate > endDate)
-      return setError("掲載終了日は開始日より後にしてください");
+      return setError("掲載終了日は開始日より後にしてぇ");
     setError("");
     onSubmit({
       name: String(form.get("name")),
@@ -493,7 +533,16 @@ function SpotForm({ spot, saveError, layers, onSubmit, onCancel, onDelete }: Spo
           onSpotDrag={(_, p) => setPos(p)}
         />
       </div>
-      {(error || saveError) && <p className="text-sm text-destructive">{error || saveError}</p>}
+      {saveSuccess && (
+        <p className="text-sm text-emerald-700" role="status" aria-live="polite">
+          {saveSuccess}
+        </p>
+      )}
+      {(error || saveError) && (
+        <p className="text-sm text-destructive" role="alert">
+          {error || saveError}
+        </p>
+      )}
       <div className="flex gap-2">
         <Button type="submit">保存</Button>
         <Button type="button" variant="outline" onClick={onCancel}>
