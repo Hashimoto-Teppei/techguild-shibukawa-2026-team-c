@@ -36,6 +36,7 @@ Googleマイマップのような観光マップWebサービスを作る。**ユ
 | `mise run test` | Vitest |
 | `mise run db:reset` | ローカル DB を作り直してデモデータを入れる |
 | `mise run db:generate` | `schema.ts` を変えたらマイグレーションを生成（その後 `mise run db:migrate`） |
+| `mise run slides:dev` | 発表スライド（http://localhost:3030）。`slides/slides.md` を書く |
 | `mise run typegen` | `wrangler.jsonc` を変えたら `Env` の型を作り直す |
 | `mise run prod:deploy` | 【本番・橋本のみ】ビルド → 本番 D1 にマイグレーション → Cloudflare Workers にデプロイ |
 | `mise run prod:migrate` | 【本番・橋本のみ】本番 D1 にマイグレーションだけ適用 |
@@ -62,6 +63,7 @@ src/
   shared/              Worker とフロントで共有する純粋関数（テストはここに置く）
 db/                    seed.sql（デモデータ）と reset.sql
 drizzle/               マイグレーション（自動生成）
+slides/                発表スライド（Slidev）。文面は slides.md、背景の空と波は global-bottom.vue（スライドごとに frontmatter の t で時刻を指定）
 ```
 
 - 管理 API（`/api/admin/*`）はログイン必須。マップ単位の API は必ず `ownerId` で絞り、他人のマップは 404 を返す

@@ -1,8 +1,5 @@
+import { WAVE_PATH } from "@shared/wave";
 import { cn } from "@/lib/utils";
-
-// 1周期 300 の波を 8 周期（2400）ぶん。半分ずらすと同じ形に戻るので、継ぎ目なく流せる
-const crests = Array.from({ length: 15 }, (_, i) => ` T${300 + i * 150} 30`).join("");
-const PATH = `M0 30 Q75 8 150 30${crests} V60 H0Z`;
 
 type Props = { className?: string; speed?: string };
 
@@ -17,7 +14,7 @@ export function Wave({ className, speed = "14s" }: Props) {
         className="wave-drift block h-full w-[200%]"
         style={{ "--wave-speed": speed } as React.CSSProperties}
       >
-        <path d={PATH} fill="currentColor" />
+        <path d={WAVE_PATH} fill="currentColor" />
       </svg>
     </div>
   );

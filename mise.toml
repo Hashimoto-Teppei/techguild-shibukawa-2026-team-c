@@ -65,3 +65,8 @@ run = [
   "wrangler d1 migrations apply DB --remote",
   "wrangler deploy",
 ]
+
+[tasks."slides:dev"]
+description = "発表スライド（http://localhost:3030）"
+dir = "slides"
+run = "pnpm exec slidev --open false"
