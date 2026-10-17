@@ -1,6 +1,7 @@
 import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { Hono } from "hono";
+import { bodyLimit } from "hono/body-limit";
 import { validator } from "hono/validator";
 import { z } from "zod";
 import { isSpotVisible, todayInJapan } from "../shared/spot-period";
@@ -81,8 +82,8 @@ const publicRoutes = new Hono<AppEnv>()
       headers: {
         "Content-Type": object.httpMetadata?.contentType ?? "application/octet-stream",
         ETag: object.httpEtag,
-        // ponytail: 同じキーで差し替えると最大5分古い画像が出る。気になればアップロードごとにキーを変える
-        "Cache-Control": "public, max-age=300",
+        // アップロードごとにキーが変わるので、長くキャッシュしてよい
+        "Cache-Control": "public, max-age=31536000, immutable",
       },
     });
   });
@@ -101,6 +102,20 @@ function json<T extends z.ZodType>(schema: T) {
     return result.data as z.output<T>;
   });
 }
+
+// ヘッダー画像。スマホの写真をそのまま上げられる大きさにしておく
+const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const IMAGE_MAX_BYTES = 10 * 1024 * 1024;
+
+const mapInput = z
+  .object({
+    published: z.boolean(),
+    title: z.string().trim().min(1),
+    description: z.string(),
+  })
+  .partial()
+  // 空だと drizzle の set({}) が例外で 500 になる
+  .refine((o) => Object.keys(o).length > 0, { message: "変更する項目がありません" });
 
 const layerInput = z.object({ name: z.string().trim().min(1) });
 
@@ -199,13 +214,42 @@ const adminRoutes = new Hono<AppEnv>()
       })),
     });
   })
-  .patch("/maps/:mapId", json(z.object({ published: z.boolean() })), async (c) => {
+  .patch("/maps/:mapId", json(mapInput), async (c) => {
     await c.var.db
       .update(maps)
       .set(c.req.valid("json"))
       .where(eq(maps.id, c.req.param("mapId")));
     return c.json({ ok: true });
   })
+  .put(
+    "/maps/:mapId/header-image",
+    bodyLimit({
+      maxSize: IMAGE_MAX_BYTES + 64 * 1024, // multipart の境界やヘッダーの分
+      onError: (c) => c.json({ error: "too_large" }, 413),
+    }),
+    validator("form", (value, c) => {
+      const image = value.image;
+      if (!(image instanceof File) || !IMAGE_TYPES.includes(image.type))
+        return c.json({ error: "invalid_type" }, 400);
+      if (image.size > IMAGE_MAX_BYTES) return c.json({ error: "too_large" }, 413);
+      return { image };
+    }),
+    async (c) => {
+      const mapId = c.req.param("mapId");
+      const { image } = c.req.valid("form");
+      const { db } = c.var;
+      const old = await db.query.maps.findFirst({
+        where: eq(maps.id, mapId),
+        columns: { headerImageKey: true },
+      });
+      const key = `maps/${mapId}/${newId()}`;
+      await c.env.IMAGES.put(key, image, { httpMetadata: { contentType: image.type } });
+      await db.update(maps).set({ headerImageKey: key }).where(eq(maps.id, mapId));
+      // 新しい画像はもう保存できているので、古い画像の削除に失敗しても成功を返す
+      if (old?.headerImageKey) c.executionCtx.waitUntil(c.env.IMAGES.delete(old.headerImageKey));
+      return c.json({ key });
+    },
+  )
   .post("/maps/:mapId/layers", json(layerInput), async (c) => {
     const mapId = c.req.param("mapId");
     const { db } = c.var;

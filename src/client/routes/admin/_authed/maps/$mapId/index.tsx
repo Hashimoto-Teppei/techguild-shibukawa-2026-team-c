@@ -5,6 +5,7 @@ import { useState } from "react";
 import { MapView } from "@/components/map-view";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
+import { imageUrl } from "@/lib/urls";
 
 export const Route = createFileRoute("/admin/_authed/maps/$mapId/")({ component: MapEditPage });
 
@@ -12,11 +13,12 @@ const mapApi = api.admin.maps[":mapId"];
 type AdminMap = Extract<InferResponseType<typeof mapApi.$get>, { spots: unknown }>;
 type AdminSpot = AdminMap["spots"][number];
 
-// マップ編集: 公開切替・レイヤー・スポット（LP 設定は #15、見た目は #31）
+// マップ編集: 公開切替・LP 設定・レイヤー・スポット（見た目は #31）
 function MapEditPage() {
   const { mapId } = Route.useParams();
   const queryClient = useQueryClient();
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
   // 編集中のスポット。"new" は新規追加
   const [editingId, setEditingId] = useState<string>();
   const { data, isPending } = useQuery({
@@ -85,6 +87,70 @@ function MapEditPage() {
 
       {/* スポットのフォームを開いているときは、エラーをフォームの中に出す */}
       {error && !formOpen && <p className="text-red-600">{error}</p>}
+
+      <section className="space-y-2">
+        <h2 className="text-lg font-bold">マップページの見た目</h2>
+        <form
+          className="space-y-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const form = new FormData(e.currentTarget);
+            save(
+              mapApi.$patch({
+                param,
+                json: {
+                  title: String(form.get("title")),
+                  description: String(form.get("description")),
+                },
+              }),
+            );
+          }}
+        >
+          <input
+            name="title"
+            defaultValue={data.title}
+            placeholder="タイトル"
+            required
+            className="w-full border p-2"
+          />
+          <textarea
+            name="description"
+            defaultValue={data.description}
+            placeholder="説明文"
+            rows={4}
+            className="w-full border p-2"
+          />
+          <Button type="submit">タイトルと説明文を保存</Button>
+        </form>
+        {data.headerImageKey && (
+          <img src={imageUrl(data.headerImageKey)} alt="" className="h-32 w-full object-cover" />
+        )}
+        <label className="block space-y-1">
+          <span className="text-sm">ヘッダー画像（JPEG・PNG・WebP、10MB まで）</span>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="block"
+            // 回線が遅いと反応がなく見えて二重に送りがちなので、終わるまで選べなくする
+            disabled={uploading}
+            onChange={async (e) => {
+              const input = e.currentTarget;
+              const image = input.files?.[0];
+              if (!image) return;
+              if (image.size > 10 * 1024 * 1024) {
+                setError("画像が大きすぎます。10MB 以下の画像を選んでください");
+                input.value = "";
+                return;
+              }
+              setUploading(true);
+              await save(mapApi["header-image"].$put({ param, form: { image } }));
+              setUploading(false);
+              input.value = "";
+            }}
+          />
+          {uploading && <span className="text-sm">アップロード中…</span>}
+        </label>
+      </section>
 
       <section className="space-y-2">
         <h2 className="text-lg font-bold">レイヤー</h2>
