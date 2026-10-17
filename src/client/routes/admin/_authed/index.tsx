@@ -1,11 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/admin/_authed/")({ component: AdminMapListPage });
 
-// 自分のマップ一覧（#27 で新規作成などを足す）
+// 自分のマップ一覧・新規作成（見た目は #31）
 function AdminMapListPage() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [error, setError] = useState("");
   const { data } = useQuery({
     queryKey: ["admin", "maps"],
     queryFn: async () => {
@@ -14,9 +20,31 @@ function AdminMapListPage() {
       return res.json();
     },
   });
+
+  async function onCreate(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const title = String(new FormData(e.currentTarget).get("title"));
+    const res = await api.admin.maps.$post({ json: { title } });
+    if (!res.ok) return setError("作成できませんでした");
+    const { id } = await res.json();
+    queryClient.invalidateQueries({ queryKey: ["admin", "maps"] });
+    navigate({ to: "/admin/maps/$mapId", params: { mapId: id } });
+  }
+
+  async function onSignOut() {
+    await authClient.signOut();
+    queryClient.clear();
+    navigate({ to: "/admin/login" });
+  }
+
   return (
-    <main className="mx-auto max-w-2xl p-4">
-      <h1 className="mb-4 text-xl font-bold">自分のマップ</h1>
+    <main className="mx-auto max-w-2xl space-y-4 p-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold">自分のマップ</h1>
+        <Button variant="ghost" size="sm" onClick={onSignOut}>
+          ログアウト
+        </Button>
+      </div>
       <ul className="space-y-2">
         {data?.map((m) => (
           <li key={m.id}>
@@ -27,6 +55,17 @@ function AdminMapListPage() {
           </li>
         ))}
       </ul>
+      <form onSubmit={onCreate} className="flex gap-2">
+        <input
+          name="title"
+          placeholder="新しいマップの名前"
+          required
+          className="flex-1 border p-2"
+        />
+        <Button type="submit">作成</Button>
+      </form>
+      {error && <p className="text-red-600">{error}</p>}
+      <p className="text-sm text-neutral-500">作ったマップは非公開です。編集画面で公開できます</p>
     </main>
   );
 }
