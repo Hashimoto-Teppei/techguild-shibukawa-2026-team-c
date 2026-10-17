@@ -136,7 +136,7 @@ type LayerLinkProps = { layerId?: string; label: string; active: boolean; onClic
 
 function LayerLink({ layerId, label, active, onClick }: LayerLinkProps) {
   return (
-    <Button asChild size="sm" variant={active ? "default" : "outline"}>
+    <Button asChild variant={active ? "default" : "outline"} className="h-11 px-4 text-sm">
       <Link from="/m/$mapId" search={{ layer: layerId }} replace onClick={onClick}>
         {label}
       </Link>

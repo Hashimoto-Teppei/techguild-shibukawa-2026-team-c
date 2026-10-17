@@ -15,7 +15,7 @@ function AdminMapListPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [error, setError] = useState("");
-  const { data } = useQuery({
+  const { data, isPending, isError } = useQuery({
     queryKey: ["admin", "maps"],
     queryFn: async () => {
       const res = await api.admin.maps.$get();
@@ -27,8 +27,10 @@ function AdminMapListPage() {
   async function onCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const title = String(new FormData(e.currentTarget).get("title"));
-    const res = await api.admin.maps.$post({ json: { title } });
-    if (!res.ok) return setError("作成できませんでした");
+    setError("");
+    const res = await api.admin.maps.$post({ json: { title } }).catch(() => null);
+    if (!res) return setError("通信できんかったけぇ、もういっぺん試してぇ");
+    if (!res.ok) return setError("作成できんかった");
     const { id } = await res.json();
     queryClient.invalidateQueries({ queryKey: ["admin", "maps"] });
     navigate({ to: "/admin/maps/$mapId", params: { mapId: id } });
@@ -48,6 +50,16 @@ function AdminMapListPage() {
           ログアウト
         </Button>
       </div>
+      {isPending && (
+        <p className="text-sm text-muted-foreground" role="status" aria-live="polite">
+          読み込みょーるけぇ、ちょい待ってぇ
+        </p>
+      )}
+      {isError && !data && (
+        <p className="text-sm text-destructive" role="alert">
+          うまいこと読めんかったけぇ、時間おいて開き直してぇ
+        </p>
+      )}
       <ul className="divide-y rounded-xl border">
         {data?.map((m) => (
           <li key={m.id}>
