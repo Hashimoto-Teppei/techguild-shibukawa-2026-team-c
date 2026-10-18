@@ -31,18 +31,18 @@ t: 0.12
 <div class="mt-8 grid grid-cols-3 gap-5">
   <div class="panel">
     <lucide-search class="text-3xl text-sea" />
-    <h3 class="mt-2">見る人は探しにくい</h3>
-    <p class="mt-2 text-sm">観光・地域の情報がいくつものサイトに散らばり、目的に合う場所や設備を見つけにくい</p>
+    <h3 class="mt-2">目的に合う場所を探しにくい</h3>
+    <p class="mt-2 text-sm">観光・地域情報が分かれていて、場所や設備を見比べにくい</p>
   </div>
   <div class="panel">
     <lucide-user-round class="text-3xl text-sea" />
-    <h3 class="mt-2">出す人は手が足りない</h3>
-    <p class="mt-2 text-sm">情報を出す職員は専任の Web 担当ではない。整理・更新の手間が負担になる</p>
+    <h3 class="mt-2">情報の整理・更新が大変</h3>
+    <p class="mt-2 text-sm">情報を発信する人は、専任の Web 担当とは限らない。情報の整理や更新に手間がかかる</p>
   </div>
   <div class="panel">
     <lucide-printer class="text-3xl text-sea" />
-    <h3 class="mt-2">紙は一度配ると直せない</h3>
-    <p class="mt-2 text-sm">チラシやマップは、イベントや営業時間が変わっても配ったまま</p>
+    <h3 class="mt-2">変更後の情報が届きにくい</h3>
+    <p class="mt-2 text-sm">紙で案内を配った後、内容が変わっても伝えにくい</p>
   </div>
 </div>
 
@@ -61,27 +61,27 @@ t: 0.3
 <div class="mt-6 grid grid-cols-3 gap-4">
   <div class="panel">
     <h3 class="flex items-center gap-2"><lucide-map-pinned class="text-sea" /> 誰でも作って公開</h3>
-    <p class="mt-1 text-sm">作成者は自分のマップだけを編集。閲覧者はログイン不要</p>
+    <p class="mt-1 text-sm">作成者はマップを編集・公開。閲覧者はログイン不要</p>
   </div>
   <div class="panel">
     <h3 class="flex items-center gap-2"><lucide-layers class="text-sea" /> 目的別のレイヤー</h3>
-    <p class="mt-1 text-sm">参加者向け・会場設備・開催準備・安全救護。1つのスポットを複数のレイヤーで使える</p>
+    <p class="mt-1 text-sm">参加者向け・会場設備など目的別に整理。スポットは複数レイヤーに登録可能</p>
   </div>
   <div class="panel">
     <h3 class="flex items-center gap-2"><lucide-calendar-clock class="text-sea" /> 臨時スポット</h3>
-    <p class="mt-1 text-sm">イベントは掲載期間つきで追加。期間が過ぎると自動で消える</p>
+    <p class="mt-1 text-sm">掲載期間を設定。期間外は公開ページで自動非表示</p>
   </div>
   <div class="panel">
-    <h3 class="flex items-center gap-2"><lucide-panels-top-left class="text-sea" /> マップを LP に</h3>
-    <p class="mt-1 text-sm">ヘッダー画像と説明文で、マップのページを案内ページにできる</p>
+    <h3 class="flex items-center gap-2"><lucide-panels-top-left class="text-sea" /> マップを案内ページに</h3>
+    <p class="mt-1 text-sm">ヘッダー画像と説明文でマップを紹介</p>
   </div>
   <div class="panel">
     <h3 class="flex items-center gap-2"><lucide-qr-code class="text-sea" /> QR で配る</h3>
-    <p class="mt-1 text-sm">レイヤーごとに QR を印刷して店頭へ。URL は配ったあとも変えない</p>
+    <p class="mt-1 text-sm">レイヤーを選んで発行。QR の URL は配布後も変わらない</p>
   </div>
   <div class="panel">
     <h3 class="flex items-center gap-2"><lucide-navigation class="text-sea" /> 経路</h3>
-    <p class="mt-1 text-sm">スポットから Google マップのナビを開く</p>
+    <p class="mt-1 text-sm">Google マップでスポットまでの経路を開く</p>
   </div>
 </div>
 
@@ -112,7 +112,7 @@ t: 0.7
 <Architecture class="mt-4" />
 
 <!--
-（約45秒）1つの Vite プロジェクトを1つの Cloudflare Worker にデプロイ。1日で作り切るための構成
+（約45秒）「画面とAPIを1つの Cloudflare Worker にまとめています。マップ情報はD1、ヘッダー画像はR2に保存し、経路案内にはGoogleマップを使います。限られた開発時間で作れるよう、構成をシンプルにしました。」
 -->
 
 ---
@@ -121,27 +121,23 @@ t: 0.76
 
 # 設計の工夫
 
-<div class="mt-6 grid grid-cols-2 gap-4">
+<div class="mt-6 grid grid-cols-3 gap-4">
   <div class="panel">
     <h3>配った URL を変えない</h3>
-    <p class="mt-1 text-sm">QR は印刷・ラミネートして置くもの。レイヤーは名前ではなく ID で持ち、名前を直しても QR は壊れない</p>
+    <p class="mt-1 text-sm">QRコードを配った後でレイヤー名を変えても、同じQRコードを使い続けられる</p>
   </div>
   <div class="panel">
-    <h3>期間外のスポットは API で除く</h3>
-    <p class="mt-1 text-sm">臨時スポットは掲載期間を過ぎると、作成者が消し忘れても公開側に出ない</p>
+    <h3>掲載期間が過ぎたら非表示</h3>
+    <p class="mt-1 text-sm">終了日を過ぎたスポットは、公開ページに自動で表示されなくなる</p>
   </div>
   <div class="panel">
-    <h3>他人のマップは見えない</h3>
-    <p class="mt-1 text-sm">管理 API はすべて作成者で絞り、他人のマップは「存在しない」と返す</p>
-  </div>
-  <div class="panel">
-    <h3>AI と1日で作る</h3>
-    <p class="mt-1 text-sm">Claude Code で実装とセルフレビュー。仕様は docs/ に短いメモで残す</p>
+    <h3>他人のマップは編集できない</h3>
+    <p class="mt-1 text-sm">ログインした人と作成者を照らし合わせ、本人のマップだけを編集できる</p>
   </div>
 </div>
 
 <!--
-（約45秒）URLのIDは作成後に固定し、レイヤーのIDを使うためQRを維持できる。掲載期間外スポットは公開APIから除外。管理APIは作成者IDで所有マップを絞る。
+（約45秒）「QRコードを配った後でレイヤー名を変えても、そのQRコードは使い続けられます。臨時スポットは掲載終了日を過ぎると、自動で公開ページから非表示になります。また、マップを編集できるのは作成者だけです。」
 -->
 
 ---
@@ -154,12 +150,14 @@ layout: center
   <p class="mt-4 text-xl">見る人はログイン不要、作る人は自分で更新できる</p>
 </div>
 
-<div class="mx-auto mt-8 grid max-w-2xl grid-cols-3 gap-3 text-center text-sm">
-  <div class="panel !p-4">地域の作成者に<br />使ってもらい改善</div>
-  <div class="panel !p-4">通報・<br />モデレーション</div>
-  <div class="panel !p-4">印刷前に<br />独自ドメイン</div>
-</div>
+<p class="mx-auto mt-8 max-w-3xl text-center text-lg">
+  次は、地域の方に使ってもらい、情報の探しやすさや更新のしやすさを確かめながら改善します。
+</p>
+
+<p class="mx-auto mt-4 max-w-3xl text-center text-sm">
+  QRコード発行画面（ログインが必要）: <a href="https://techguild-shibukawa-2026-team-c.hashimoto-2f0.workers.dev/admin/maps/shibukawa/qr">https://techguild-shibukawa-2026-team-c.hashimoto-2f0.workers.dev/admin/maps/shibukawa/qr</a>
+</p>
 
 <!--
-（約40秒）「まずは地域の情報を探しやすくするところから、渋川を訪れるきっかけを作ります。」
+（約40秒）「見る人はログイン不要で、作る人は自分で更新できます。次は地域の方に使ってもらい、情報の探しやすさや更新のしやすさを確かめながら改善します。」
 -->
