@@ -126,3 +126,44 @@ export function lerp(xs: number[], ys: (number | string)[], v: number): string |
   return `rgb(${ca.map((c, k) => Math.round(c + (cb[k] - c) * p)).join(" ")})`;
 }
 const hex = (s: string) => [1, 3, 5].map((k) => Number.parseInt(s.slice(k, k + 2), 16));
+
+// ヘッダー画像がないマップの表紙（src/client/components/public/map-cover.tsx）
+// 朝・昼・夕・夜のどれかと左右反転の有無（8通り）を、マップ ID から決める。同じマップはいつも同じ景色になる
+export const COVER_MOMENTS = [0.1, 0.32, 0.6, 0.84];
+
+export function coverVariant(mapId: string) {
+  let h = Array.from(mapId).reduce((h, c) => (Math.imul(h, 31) + c.charCodeAt(0)) >>> 0, 0);
+  // 下位ビットを混ぜる。混ぜないと、デモの3つのマップがすべて夜になった
+  h ^= h >>> 16;
+  h = Math.imul(h, 0x45d9f3b);
+  h ^= h >>> 16;
+  h >>>= 0;
+  return { t: COVER_MOMENTS[h % COVER_MOMENTS.length], flip: ((h >>> 16) & 1) === 1 };
+}
+
+// 表紙の空（水平線より上）の中での、島影の高さ（%）。太陽はこれより上に出す
+export const COVER_ISLAND_HEIGHT = 16;
+
+export function coverScene(t: number) {
+  const color = (ys: string[]) => String(lerp(STOPS, ys, t));
+  const sun = sunAt(t);
+  return {
+    sky: color(SKY),
+    glow: color(GLOW),
+    glowOpacity: Number(lerp(STOPS, GLOW_OPACITY, t)),
+    island: color(ISLAND),
+    sea: color(SEA),
+    lagoon: color(LAGOON),
+    night: Number(lerp(STOPS, NIGHT, t)),
+    // 朝と夕方は弧の式だと島影に隠れる（夕方は沈んでいる）ので、島影の上に留める
+    sun:
+      t < SUNSET
+        ? {
+            x: sun.x,
+            y: Math.max(sun.y, COVER_ISLAND_HEIGHT),
+            color: String(lerp(SUN_STOPS, SUN_COLORS, t)),
+          }
+        : undefined,
+    moon: t > MOONRISE ? moonAt(t) : undefined,
+  };
+}
