@@ -5,6 +5,8 @@ colorSchema: light
 fonts:
   provider: none
 transition: fade
+# /slides/ に置き、アプリの SPA フォールバックとぶつからないよう hash で遷移する
+routerMode: hash
 layout: center
 # 背景の時刻（global-bottom.vue）。0 = 夜明け前、0.3 = 昼、0.64 = 日の入り、0.85 = 夜
 t: 0.03

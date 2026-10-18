@@ -37,8 +37,9 @@ Googleマイマップのような観光マップWebサービスを作る。**ユ
 | `mise run db:reset` | ローカル DB を作り直してデモデータを入れる |
 | `mise run db:generate` | `schema.ts` を変えたらマイグレーションを生成（その後 `mise run db:migrate`） |
 | `mise run slides:dev` | 発表スライド（http://localhost:3030）。`slides/slides.md` を書く |
+| `mise run slides:build` | スライドを `dist/client/slides` にビルド（`build` の後に実行）。本番では `/slides/` で公開される |
 | `mise run typegen` | `wrangler.jsonc` を変えたら `Env` の型を作り直す |
-| `mise run prod:deploy` | 【本番・橋本のみ】ビルド → 本番 D1 にマイグレーション → Cloudflare Workers にデプロイ |
+| `mise run prod:deploy` | 【本番・橋本のみ】ビルド（スライド込み）→ 本番 D1 にマイグレーション → Cloudflare Workers にデプロイ |
 | `mise run prod:migrate` | 【本番・橋本のみ】本番 D1 にマイグレーションだけ適用 |
 
 - 本番に触るタスクは `prod:` で始まり、実行前に確認が出る。それ以外のタスクはローカルにしか作用しない
@@ -72,7 +73,7 @@ slides/                発表スライド（Slidev）。文面は slides.md、�
 
 ## 本番環境
 
-- URL: https://techguild-shibukawa-2026-team-c.hashimoto-2f0.workers.dev
+- URL: https://techguild-shibukawa-2026-team-c.hashimoto-2f0.workers.dev（スライドは `/slides/`）
 - D1 `team-c` / R2 `team-c-images`。`BETTER_AUTH_SECRET` は `wrangler secret`、`BETTER_AUTH_URL` は `wrangler.jsonc` の `vars`
 - 本番 DB のデモデータは投入済み（大会マップ `beach-sports-demo` も含む。経緯は `docs/demo-data.md`）。`db/seed.sql` を本番に流さない（公開パスワードのアカウントができる）。入れ直しが必要なら橋本に頼む
 

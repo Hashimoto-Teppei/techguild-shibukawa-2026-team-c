@@ -58,10 +58,11 @@ confirm = "本番 D1 にマイグレーションを適用します。よろし�
 run = "wrangler d1 migrations apply DB --remote"
 
 [tasks."prod:deploy"]
-description = "【本番】ビルド → 本番 D1 にマイグレーション → Cloudflare Workers にデプロイ"
+description = "【本番】ビルド（スライド込み）→ 本番 D1 にマイグレーション → Cloudflare Workers にデプロイ"
 confirm = "本番環境にデプロイします。よろしいですか？"
 run = [
   { task = "build" },
+  { task = "slides:build" },
   "wrangler d1 migrations apply DB --remote",
   "wrangler deploy",
 ]
@@ -70,3 +71,8 @@ run = [
 description = "発表スライド（http://localhost:3030）"
 dir = "slides"
 run = "pnpm exec slidev --open false"
+
+[tasks."slides:build"]
+description = "発表スライドを dist/client/slides にビルド（build の後に実行。本番では /slides/ で公開）"
+dir = "slides"
+run = "pnpm exec slidev build --base /slides/ --out ../dist/client/slides"

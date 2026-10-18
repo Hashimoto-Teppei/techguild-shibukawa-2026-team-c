@@ -25,7 +25,7 @@
 - **ルート表示**: Google マップの経路 URL（`https://www.google.com/maps/dir/?api=1&destination=...`）を開く。Directions API は使わない
 - **画像**: LP の画像は R2 に保存する。アップロード時に Worker 側で画像の Content-Type とサイズ上限をチェックする
 - **テスト**: Vitest。臨時スポットの表示判定などの純粋関数に絞る
-- **発表スライド**: Slidev を `slides/` に置き、pnpm workspace の別パッケージにする（Slidev 内蔵の Vite / Vue をアプリと分けるため）。`mise run slides:dev` で開く
+- **発表スライド**: Slidev を `slides/` に置き、pnpm workspace の別パッケージにする（Slidev 内蔵の Vite / Vue をアプリと分けるため）。`mise run slides:dev` で開く。本番はアプリと同じ Worker の `/slides/` で公開する（`prod:deploy` が `dist/client/slides` にビルドして一緒に上げる。アプリの SPA フォールバックとぶつからないよう `routerMode: hash`）
 - **アカウント**: Google Maps API キー・Cloudflare アカウントは橋本が用意する
 
 ## 入れないもの
