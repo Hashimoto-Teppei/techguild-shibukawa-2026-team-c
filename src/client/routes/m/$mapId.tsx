@@ -83,6 +83,7 @@ function MapPage() {
     <main className="pb-12">
       <Header title={data.title} imageKey={data.headerImageKey}>
         <ShareButton
+          mapId={data.id}
           title={data.title}
           url={shareUrl.toString()}
           imageKey={data.headerImageKey}

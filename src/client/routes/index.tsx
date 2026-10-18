@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDown, MapPinned } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { motion } from "motion/react";
 import { DaySky } from "@/components/public/day-sky";
+import { MapCover } from "@/components/public/map-cover";
 import { Wave } from "@/components/public/wave";
 import { api } from "@/lib/api";
 import { imageUrl } from "@/lib/urls";
@@ -97,9 +98,10 @@ function MapListPage() {
                       className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     />
                   ) : (
-                    <div className="flex size-full items-center justify-center text-ink/60">
-                      <MapPinned className="size-12" />
-                    </div>
+                    <MapCover
+                      mapId={m.id}
+                      className="size-full transition-transform duration-700 ease-out group-hover:scale-105"
+                    />
                   )}
                   <Wave className="absolute inset-x-0 -bottom-px h-5 text-white" speed="20s" />
                 </div>

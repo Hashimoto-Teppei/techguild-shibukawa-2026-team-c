@@ -1,11 +1,18 @@
 import { Check, X as Close, Copy, MessageCircle, Share2 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useRef, useState } from "react";
+import { MapCover } from "@/components/public/map-cover";
 import { Wave } from "@/components/public/wave";
 import { imageUrl } from "@/lib/urls";
 import { cn } from "@/lib/utils";
 
-type Props = { title: string; url: string; imageKey: string | null; layerName?: string };
+type Props = {
+  mapId: string;
+  title: string;
+  url: string;
+  imageKey: string | null;
+  layerName?: string;
+};
 
 // 閲覧者のシェア（docs/share.md）。ヘッダー右上のボタンから、絵はがき風のシートを開く
 // 本文はマップ名と URL だけ
@@ -28,6 +35,7 @@ export function ShareButton(props: Props) {
 
 function ShareSheet({
   ref,
+  mapId,
   title,
   url,
   imageKey,
@@ -60,13 +68,15 @@ function ShareSheet({
       className="share-sheet mx-auto mt-auto mb-0 w-full max-w-full overflow-hidden rounded-t-panel bg-foam p-0 text-ink sm:mb-auto sm:max-w-md sm:rounded-panel"
     >
       {/* 絵はがきの表。マップのヘッダー画像に、タイトルと送るレイヤーを載せる */}
-      <div className="on-dark relative h-44 overflow-hidden bg-linear-to-b from-ink to-sea text-white">
-        {imageKey && (
+      <div className="on-dark relative h-44 overflow-hidden bg-ink text-white">
+        {imageKey ? (
           <img
             src={imageUrl(imageKey)}
             alt=""
             className="absolute inset-0 size-full object-cover"
           />
+        ) : (
+          <MapCover mapId={mapId} className="absolute inset-0" />
         )}
         <div className="absolute inset-0 bg-linear-to-t from-ink/90 via-ink/30 to-ink/10" />
         <button
