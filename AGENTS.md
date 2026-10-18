@@ -74,7 +74,7 @@ slides/                発表スライド（Slidev）。文面は slides.md、�
 
 - URL: https://techguild-shibukawa-2026-team-c.hashimoto-2f0.workers.dev
 - D1 `team-c` / R2 `team-c-images`。`BETTER_AUTH_SECRET` は `wrangler secret`、`BETTER_AUTH_URL` は `wrangler.jsonc` の `vars`
-- 本番 DB のデモデータは投入済み。`db/seed.sql` を本番に流さない（公開パスワードのアカウントができる）。入れ直しが必要なら橋本に頼む
+- 本番 DB のデモデータは投入済み（大会マップ `beach-sports-demo` も含む。経緯は `docs/demo-data.md`）。`db/seed.sql` を本番に流さない（公開パスワードのアカウントができる）。入れ直しが必要なら橋本に頼む
 
 ## 開発方針
 
