@@ -1,4 +1,5 @@
 import { filterByLayer } from "@shared/layer-filter";
+import { mapUrl } from "@shared/page-meta";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { InferResponseType } from "hono/client";
@@ -7,6 +8,7 @@ import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } fr
 import { Fragment, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { z } from "zod";
 import { MapView } from "@/components/map-view";
+import { ShareButton } from "@/components/public/share-panel";
 import { Wave } from "@/components/public/wave";
 import { api } from "@/lib/api";
 import { directionsUrl, imageUrl } from "@/lib/urls";
@@ -73,10 +75,20 @@ function MapPage() {
   const { activeLayerId, spots } = filterByLayer(data.spots, data.layers, layer);
   const selected = spots.find((s) => s.id === selectedId);
   const clearSelection = () => setSelectedId(undefined);
+  // 今見ているレイヤーごとシェアする（スポットは URL に入れない。docs/share.md）
+  const shareUrl = new URL(mapUrl(location.origin, data.id));
+  if (activeLayerId) shareUrl.searchParams.set("layer", activeLayerId);
 
   return (
     <main className="pb-12">
-      <Header title={data.title} imageKey={data.headerImageKey} />
+      <Header title={data.title} imageKey={data.headerImageKey}>
+        <ShareButton
+          title={data.title}
+          url={shareUrl.toString()}
+          imageKey={data.headerImageKey}
+          layerName={data.layers.find((l) => l.id === activeLayerId)?.name}
+        />
+      </Header>
       <div className="mx-auto max-w-3xl lg:max-w-7xl">
         {data.description && (
           <p className="mt-4 max-w-[38rem] px-4 leading-relaxed whitespace-pre-wrap text-ink/85">
@@ -230,7 +242,16 @@ function SpotDetail({ spot, ref, hideName, className }: SpotDetailProps) {
 }
 
 // ヘッダー画像は下端を波で切り、スクロールに合わせてゆっくり動かす
-function Header({ title, imageKey }: { title: string; imageKey: string | null }) {
+// children はヘッダー右上に置く操作（シェアボタン）
+function Header({
+  title,
+  imageKey,
+  children,
+}: {
+  title: string;
+  imageKey: string | null;
+  children: React.ReactNode;
+}) {
   const ref = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
@@ -254,9 +275,12 @@ function Header({ title, imageKey }: { title: string; imageKey: string | null })
           imageKey && "min-h-[44svh]",
         )}
       >
-        <Link to="/" className="w-fit rounded-full bg-ink/70 px-3 py-1.5 text-sm font-bold">
-          たまりんマップ
-        </Link>
+        <div className="flex items-center justify-between gap-3">
+          <Link to="/" className="w-fit rounded-full bg-ink/70 px-3 py-1.5 text-sm font-bold">
+            たまりんマップ
+          </Link>
+          {children}
+        </div>
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

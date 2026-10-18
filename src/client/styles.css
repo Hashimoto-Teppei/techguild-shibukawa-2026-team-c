@@ -140,10 +140,84 @@
   animation: twinkle 3.2s ease-in-out infinite;
 }
 
+/* シェアのシート（share-panel.tsx）。スマホは下からせり上がり、PC は中央に少し浮き上がって出る */
+.share-sheet,
+.share-sheet::backdrop {
+  transition:
+    translate 0.36s cubic-bezier(0.2, 0.9, 0.3, 1.05),
+    opacity 0.24s ease,
+    display 0.36s allow-discrete,
+    overlay 0.36s allow-discrete;
+}
+
+.share-sheet {
+  translate: 0 100%;
+}
+
+.share-sheet[open] {
+  translate: 0 0;
+}
+
+@starting-style {
+  .share-sheet[open] {
+    translate: 0 100%;
+  }
+}
+
+.share-sheet::backdrop {
+  background: rgb(11 46 79 / 0.55);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+}
+
+.share-sheet[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .share-sheet[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+@media (min-width: 640px) {
+  .share-sheet {
+    translate: 0 1.5rem;
+    opacity: 0;
+  }
+
+  .share-sheet[open] {
+    opacity: 1;
+  }
+
+  @starting-style {
+    .share-sheet[open] {
+      translate: 0 1.5rem;
+      opacity: 0;
+    }
+  }
+}
+
+/* 切手のギザギザの縁。円で縁を切り抜く */
+.stamp {
+  --r: 5px;
+  padding: calc(var(--r) * 3);
+  background: #fff;
+  mask:
+    radial-gradient(var(--r), #0000 98%, #000) round calc(-1.5 * var(--r)) calc(-1.5 * var(--r)) /
+    calc(3 * var(--r)) calc(3 * var(--r)),
+    linear-gradient(#000 0 0) no-repeat 50% / calc(100% - 3 * var(--r)) calc(100% - 3 * var(--r));
+}
+
 @media (prefers-reduced-motion: reduce) {
   .wave-drift,
   .twinkle {
     animation: none;
+  }
+
+  .share-sheet,
+  .share-sheet::backdrop {
+    transition: none;
   }
 }
 

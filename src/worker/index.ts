@@ -7,6 +7,7 @@ import { z } from "zod";
 import { visibleFieldValues } from "../shared/spot-fields";
 import { isSpotVisible, todayInJapan } from "../shared/spot-period";
 import { type Auth, createAuth, type Db } from "./auth";
+import { findPublishedMap, isPublished } from "./db/published";
 import * as schema from "./db/schema";
 import { layerFields, layers, maps, spotFieldValues, spotLayers, spots } from "./db/schema";
 
@@ -57,17 +58,14 @@ const publicRoutes = new Hono<AppEnv>()
     const rows = await c.var.db
       .select({ id: maps.id, title: maps.title, headerImageKey: maps.headerImageKey })
       .from(maps)
-      .where(eq(maps.published, true))
+      .where(isPublished)
       .orderBy(desc(maps.createdAt));
     return c.json(rows);
   })
   .get("/maps/:mapId", async (c) => {
     const { db } = c.var;
     const mapId = c.req.param("mapId");
-    const map = await db.query.maps.findFirst({
-      where: and(eq(maps.id, mapId), eq(maps.published, true)),
-      columns: { id: true, title: true, description: true, headerImageKey: true },
-    });
+    const map = await findPublishedMap(db, mapId);
     // 存在しない・非公開は区別せず 404（docs/public-url.md）
     if (!map) return c.json({ error: "not_found" }, 404);
 
