@@ -22,7 +22,7 @@ Googleマイマップのような観光マップWebサービスを作る。**ユ
 
 ## 決定済みの仕様
 
-技術構成は `docs/tech-stack.md`、公開 URL は `docs/public-url.md`、デモシナリオは `docs/demo-scenario.md`、画面・機能の範囲と担当分けは `docs/team-plan.md`、レイヤーの項目は `docs/layer-fields.md`、配色・書体・動きは `docs/visual-design.md`、UI 改善の方針と文言（岡山弁）は `docs/ui-ux.md`。用語は `GLOSSARY.md` に合わせる。
+技術構成は `docs/tech-stack.md`、公開 URL は `docs/public-url.md`、デモシナリオは `docs/demo-scenario.md`、画面・機能の範囲と担当分けは `docs/team-plan.md`、レイヤーの項目は `docs/layer-fields.md`、配色・書体・動きは `docs/visual-design.md`、UI 改善の方針と文言（岡山弁）は `docs/ui-ux.md`、シェアと OGP・SEO は `docs/share.md`。用語は `GLOSSARY.md` に合わせる。
 
 ## コマンド
 

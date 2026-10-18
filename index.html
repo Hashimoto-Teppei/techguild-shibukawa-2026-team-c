@@ -3,7 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- / と /m/:mapId では Worker が中身を書き換え、canonical を足す（src/worker/pages.ts）。タグを消さない -->
     <title>たまりんマップ</title>
+    <meta name="description" content="地域のお店や団体が、おすすめや案内を地図にまとめて公開する観光マップ。目的別のレイヤーでスポットを探せます。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="たまりんマップ" />
+    <meta property="og:locale" content="ja_JP" />
+    <meta property="og:title" content="たまりんマップ" />
+    <meta property="og:description" content="地域のお店や団体が、おすすめや案内を地図にまとめて公開する観光マップ。目的別のレイヤーでスポットを探せます。" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>
