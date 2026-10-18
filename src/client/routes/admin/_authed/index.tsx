@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
-import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/admin/_authed/")({ component: AdminMapListPage });
 
@@ -36,20 +35,9 @@ function AdminMapListPage() {
     navigate({ to: "/admin/maps/$mapId", params: { mapId: id } });
   }
 
-  async function onSignOut() {
-    await authClient.signOut();
-    queryClient.clear();
-    navigate({ to: "/admin/login" });
-  }
-
   return (
     <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <div className="flex items-center justify-between">
-        <h1 className="font-heading text-2xl">自分のマップ</h1>
-        <Button variant="ghost" size="sm" onClick={onSignOut}>
-          ログアウト
-        </Button>
-      </div>
+      <h1 className="font-heading text-2xl">自分のマップ</h1>
       {isPending && (
         <p className="text-sm text-muted-foreground" role="status" aria-live="polite">
           読み込みょーるけぇ、ちょい待ってぇ

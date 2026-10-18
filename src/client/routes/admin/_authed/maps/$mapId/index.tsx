@@ -93,9 +93,6 @@ function MapEditPage() {
 
   return (
     <main className="mx-auto max-w-2xl space-y-6 p-4 lg:max-w-5xl">
-      <Link to="/admin" className="text-sm underline">
-        ← 自分のマップ
-      </Link>
       <section className="space-y-3">
         <h1 className="font-heading text-3xl">{data.title}</h1>
         <div className="flex flex-wrap items-center gap-3">
